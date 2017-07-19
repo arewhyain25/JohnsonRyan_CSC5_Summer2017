@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=CppTemplate
+PROJECTNAME=Project_1_DungeonsAndDragons
 
 # Active Configuration
 DEFAULTCONF=Debug
