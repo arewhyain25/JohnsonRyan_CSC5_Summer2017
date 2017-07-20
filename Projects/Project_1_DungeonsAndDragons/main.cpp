@@ -32,9 +32,9 @@ int rapier();
 int dagger();
 int shrtbow();
 int fists();
-int combat(int,int,int,int,int,int,int,int,int);
-int hlthpot(int,int,int);
-bool guesNum(int,int,int,int);//Guess the number
+int combat(int&,int&,int,int&,int,int,int,int,int,int,bool&);
+int hlthpot(int&,int&,int&);
+bool guesNum(int&,float&,int,int);//Guess the number
 
 //Execution begins here
 int main(int argc, char** argv) {
@@ -45,11 +45,11 @@ int main(int argc, char** argv) {
     char action=0;
         //Character Ability Scores
         int str=10,//Strength
-            dex=18,//Dexterity
+            dex=16,//Dexterity
             con=10,//Constitution
             intl=14,//Intellect
             wis=13,//Wisdom
-            cha=16;//Charisma
+            cha=14;//Charisma
 
         //Ability Modifiers
         int strmod=abltmod(str);
@@ -88,19 +88,18 @@ int main(int argc, char** argv) {
         //Character Features
         int maxhlth=30;//Character's Health
         int health=maxhlth;//Character's current health
-        float money=200;//The most important thing to a thief, Character's Gold
-        int silver=0;//100 Silver = 1 Gold
-        int gold=money;//Whole value is gold, decimal value is silver
-        int armor=18;//Character's Armor Class
+        int gold=50;//Starting gold
+        int armor=16;//Character's Armor Class
         string name;//Character's name
         string helper;//Name of contracted help
 
         //Environmental Features
         bool helped=false;
         int beers=0;//Beers drank
-        int potions;//Health potions in inventory
-        float house;//Available gold in the Inn
+        int potions=3;//Health potions in inventory
+        float table=2000;//Available gold in the Inn
         int ring=1;//Limits the occurrence of the ring theft
+        bool victory=true;//Condition set by combat resolution
     //Combat Test    ******************************                 ******************************          
    // health=combat(health,dexmod,maxhlth,potions,armor,fweapon,20,0,12);
                         //Player's health,max health, number of potions,
@@ -131,33 +130,49 @@ int main(int argc, char** argv) {
                        "for any useful rumors. - PRESS 2"<<endl;
                cout<<setw(100)<<"Step up to the bar and buy a drink. - Press 3";
                        cout<<endl;
+                       cout<<"Your choice of ACTION : ";
                cin>>action;
                switch(action){
                    case '1':{//Gambling
-                       //file describing gambling "guess the number"
+                        //file describing gambling "guess the number"
                        cout<<"You step up to the table of gamblers."<<endl;
-                       int temp=gold;
-                       if (house<=0){
-                           cout<<setw(100)<<"The table is tapped out, haven't you done"
-                                   " enough?"<<endl;
-                       }
-                       gold=guesNum(gold,house,chamod,decptn);
-                       if (gold<0){
-                            health=combat(health,dexmod,maxhlth,potions,armor,fweapon,20,1,14);
-                            //Player's health,max health, number of potions,
-                            //Players Combat Modifier, Player's Armor Class;
-                            //Mob's health,mob's combat modifier,mobs Armor Class;
-                            gold*=(-1);
-                            house=temp-gold;
-                            cout<<"You have "<<gold<<"gold"<<endl;
-                       }
-                       break;
+                       if (table<=0){//Prevent's taking money from house that isn't there
+                            cout<<setw(100)<<"The table is tapped out, haven't you done"
+                                    " enough?"<<endl;
+                        }
+                       guesNum(gold,table,chamod,decptn);
+                       if (gold<0){//You are fighting the gambler (Health=20,mod=1,AC=14)
+                            combat(gold,health,maxhlth,potions,dexmod,armor,fweapon,20,1,14,victory);
+                            //Player's Gold, Current Health, Max Health, # of Potions,
+                            //Combat Modifier, and Armor Class;
+                            //Mob's Health, Combat Modifier, and Armor Class;
+                            abs(gold);
+                            if (victory==false&&health>0){
+                                cout<<"Running from a fight is not necessarily a bad decision but it"
+                                        "will end your night at least you kept"<<endl;
+                                cout<<"the gold on your person. You cannot go back into the in "
+                                        "for the shame would be too much."<<endl;
+                                cout<<"You eventually put together a workable disguise and return to"
+                                        " the room you rented."<<endl;                                
+                            }
+                            else if (health<=0&&victory==false){
+                                cout<<"You lost the fight and were thrown out of the inn"<<endl;
+                                cout<<"You lost half of your money in the exchange."<<endl;
+                                gold/=2;                                
+                            }else {
+                                cout<<"You defeated your enemy. Collect what gold you can find on the ground"
+                                        " and go about your business."<<endl;
+                                gold+=(rand()%20+1)*3;//Randomize gold recovered just the a DM would
+                            }
+                            if (helped==true){
+                                gold-=10;
+                                cout<<"You pay "+helper+" 10g."<<endl;
+                            }     
+                            helped=false;    
+                       }break;
                    }
                    case '2':{//Listen for Rumors
-                       if(ring>=1){
-                           
-                       }
-                       
+                       int turns=0;                       
                    }
                    case '3':{//Buy a drink
                        ////file for conversation with guy at the bar.
@@ -168,12 +183,14 @@ int main(int argc, char** argv) {
                            }else{
                           switch (beers){
                                 case 0:{
-                                    cout<<setw(100)<<"The young man seems very anxious perhaps a "
+                                    cout<<setw(100)<<"The young man seems very anxious, perhaps a "
                                             "nice cold ale will help calm his nerves."<<endl;break;
                                 }
                                 case 1:{
-                                    cout<<setw(100)<<"The young man seems calm and more "
-                                            "at ease."<<endl;break;
+                                    cout<<"You buy a round for the two of you."<<endl;
+                                    gold-=5;
+                                    cout<<setw(100)<<"He seems to calm down and "
+                                            "be more at ease."<<endl;break;
                                 }
                                 case 2:{
                                     cout<<setw(100)<<"Now he's getting tipsy but just "
@@ -195,7 +212,7 @@ int main(int argc, char** argv) {
                                   cout<<"He's still passed out."<<endl;
                             }
 
-                           cout<<setw(100)<<"Would you like to buy him a drink?"
+                           cout<<setw(100)<<"Would you like to buy a round of drinks for 5g?"
                                    " - PRESS 1"<<endl;
                            cout<<setw(100)<<"Do you want to relieve him of his"
                                    " burden? - PRESS 2"<<endl;
@@ -214,26 +231,57 @@ int main(int argc, char** argv) {
                                    }
                                }break;
                                case '2':{
-                                   if(check(15-beers,dexmod,sltohnd)==true){
+                                   if(check(20-beers*2,dexmod,sltohnd)==true){
                                        //cout//file for successful pickpocket
                                          ring--;
-                                         int worth=(rand()%5+1)*50;
+                                         int worth=(rand()%20+1)*5;
                                          cout<<"The ring was worth "<<worth<<" gold."<<endl;
                                          gold+=worth;
-                                   }else{//Combat!!
-                                       health=combat(health,dexmod,maxhlth,potions,armor,fweapon,14,0,10);
-                                    //Player's health,max health, number of potions,
-                                    //Players Combat Modifier, Player's Armor Class;
-                                    //Mob's health,mob's combat modifier,mobs Armor Class;
+                                   }else{//Combat!!!You're fighting Lover-Boy (health=14,mod=0,ac=12)
+                                       combat(gold,health,maxhlth,potions,dexmod,armor,fweapon,14,0,12,victory);
+                                            //Player's Gold, Current Health, Max Health, # of Potions,
+                                            //Combat Modifier, and Armor Class;
+                                            //Mob's Health, Combat Modifier, and Armor Class;
+                                       abs(gold);
+                                        if (victory==false&&health>0){
+                                            cout<<"Running from a fight is not necessarily a bad decision but it"
+                                                    "will end your night at least you kept"<<endl;
+                                            cout<<"the gold on your person. You cannot go back into the in "
+                                                    "for the shame would be too much."<<endl;
+                                            cout<<"You eventually put together a workable disguise and return to"
+                                                    " the room you rented."<<endl;                                
+                                        }
+                                        else if (health<=0&&victory==false){
+                                            cout<<"You lost the fight and were thrown out of the inn"<<endl;
+                                            cout<<"You lost half of your money in the exchange."<<endl;
+                                            gold/=2;                                
+                                        }
+                                        else {
+                                            cout<<"You beat the kid up for catching you in the act "
+                                                    "this is not what we would call a high moment for you."<<endl;;
+                                            ring--;
+                                            int worth=(rand()%20+1)*5;
+                                            cout<<"The ring was worth "<<worth<<" gold."<<endl;
+                                            gold+=worth;
+                                            gold+=(rand()%20+1)*3;//Randomize gold recovered just the a DM would
+                                            cout<<"What just occurred is not exactly a mystery to the patrons "
+                                                    "and you are 'asked' to leave."<<endl;
+                                            victory=false;
+                                        }
+                                        if (helped==true){
+                                            gold-=10;
+                                            cout<<"You pay "+helper+" 10g."<<endl;
+                                        }     
+                                        helped=false;
                                    }
                                }break;
                                case '3':{
                                    if (beers==4){
-                                       cout<<"The smart thing to do no is remove "
+                                       cout<<"The smart thing to do now is remove "
                                                "yourself from the situation and avoid "
                                                "notice."<<endl;
                                        ring--;
-                                       int worth=(rand()%5+1)*50;
+                                       int worth=(rand()%20+1)*5;
                                          cout<<"The ring was worth "<<worth<<" gold."<<endl;
                                          gold+=worth;
                                    }else{
@@ -257,16 +305,325 @@ int main(int argc, char** argv) {
                        
                    }
                }
-            cout<<"You have "<<health<<" hit points, "<<gold<<" gold and "
-                    <<silver<<" silver."<<endl;
-            }while(health>0);
+            cout<<"You have "<<health<<" hit points, "<<gold<<" gold."<<endl;
+            }while(health>0&&victory==true);
+cout<<"You have "<<gold<<"gold and your night in the inn is over."<<endl;
+cout<<endl;
+cout<<setw(50)<<"GAME OVER"<<endl;
        
-    //Output the transformed data
-       
-    //Exit stage right!
+   //Exit stage right!
     return 0;
+} 
+//Scenarios:
+
+//Gambling Games
+bool guesNum(int& gold,float& table,int chamod,int decptn){//Character's Gold, Possible gold at the table
+    char stay=1;
+    int beer=0;
+    float wager=0;//Must be a float for Lie detector Difficulty to adjust properly
+    int wins=0,losses=0;
+    char num;
+    char action='0';
+    if(table<=0){
+        cout<<setw(100)<<"The table is tapped, you've taken it all already, "
+                "move along."<<endl;
+    }else if (gold<=0){
+        cout<<setw(100)<<"You can't gamble if you don't have anything to "
+                "wager, move along."<<endl;
+    }else{
+        do{
+            cout<<"|Table : "<<table<<" |Beers : "<<beer<<" |Wins : "<<wins<<" |Losses : "
+                    <<losses<<"|"<<endl;
+            cout<<setw(100)<<"Would you like to buy a round for the table for be 5 gold?"<<endl;
+            cout<<setw(100)<<"Yes - PRESS 1"<<endl;
+            cout<<setw(100)<<"No - PRESS 2"<<endl;
+            cin>>action;
+            if (action=='1'){
+                cout<<"You buy a round of ale for the table."<<endl;
+                cout<<setw(100)<<"The table of risk takers thank you kindly and"
+                        " urge you on to the next game."<<endl;
+                beer++;
+                gold-=5;
+            }else{
+                cout<<"You politely decline the suggestion and things continue as"
+                        " they were."<<endl;
+            }
+            cout<<setw(100)<<"Make a wager"<<endl;
+            cout<<"Wager : ";
+            cin>>wager;
+            while(wager>table){
+                cout<<setw(100)<<"There isn't that much gold left on the table. "
+                        "Try wagering less."<<endl;
+                cout<<"Wager : ";
+                cin>>wager;
+            }
+            while(wager>gold){
+                cout<<setw(100)<<"Try as you may, you can't bet money you don't have."
+                        "Try wagering less."<<endl;
+                cout<<"Wager : ";
+                cin>>wager;
+            }
+            gold-=wager;//Player Ante
+            table-=wager;//Table Ante
+            cout<<setw(100)<<"Okay pal, now pick a number 1-3 and lets see if we can guess it"<<endl;
+            cout<<"Your number : ";
+            cin>>num;
+            while(num>'3'||num<'1'){
+                cout<<setw(100)<<"Come on, pick a number between 1 and 3, this isn't the "
+                        "part you get to cheat on."<<endl;
+                cout<<"Your number : ";
+                cin>>num;
+            }
+            int guess=rand()%3+1;
+            cout<<setw(98)<<"Is your number "<<static_cast<char>(guess+48)<<"?"<<endl;
+            if(!(num==static_cast<char>(guess+48))){
+                gold+=wager*2;
+                wins++;
+                cout<<"No."<<endl;
+                cout<<"You won honestly...neat! Now you have "<<gold;
+                cout<<" gold."<<endl;
+            }else{
+                cout<<setw(100)<<"Do you want to tell the truth or lie?"<<endl;
+                cout<<setw(100)<<"Check Difficulty is : "<<((10-beer+wins-losses)*(1+wager/table))<<endl;
+                cout<<setw(100)<<"Lie - PRESS 1"<<endl;
+                cout<<setw(100)<<"Lie - PRESS 2"<<endl;
+                cout<<setw(100)<<"Lie - PRESS 3"<<endl;
+                cout<<setw(100)<<"Lie - PRESS 4"<<endl;
+                cout<<setw(100)<<"Tell Truth - PRESS 5"<<endl;
+                cin>>action;
+                if (action=='5'){
+                    cout<<"You admit the truth and share with them that they"
+                            " guessed correctly, your pockets are lighter"<<endl;
+                    cout<<"but so is you hearth for all that will get you."<<endl;
+                    table+=wager*2;
+                    losses++;
+                    cout<<"Now you have "<<gold<<" gold."<<endl;
+                }else{                     
+                    cout<<"You decided to lie, of course you did. Simple games require"
+                            "simple lies, you respond with a simple 'No'"<<endl;
+                    /*Difficulty of deception check rises when a larger percentage
+                     * of the table's money is at stake and when you have won several
+                     * times. Losing occasionally lowers their suspicion, but so does
+                     * beer.
+                     */       
+                    if (check((10+wins*2-beer-losses/2)*(1+wager/table),chamod,decptn)==true){ 
+                        cout<<"The gamblers are disappointed but they believe you."<<endl;
+                        gold+=wager*2;
+                        wins++;
+                        cout<<"Now you have "<<gold<<" gold."<<endl;
+                    }else{ //Combat!!!
+                        gold*=(-1);
+                    }
+
+                }
+
+            }
+            if (gold>0){
+            cout<<setw(100)<<"Do you want to stay at the table?"<<endl;
+            cout<<setw(100)<<"Stay - PRESS 1"<<endl;
+            cout<<setw(100)<<"Leave - PRESS 2"<<endl;
+            cin>>stay;
+            }
+        }while (stay=='1'&&gold>0&&table>0);
+    }
+    return gold,table;           
 }
-   
+//If Combat is necessary    
+int combat(int& gold,int& health,int maxhlth,int& potions,int abltmod,int plyrAC,int weapon,
+        int mobhlth,int cbtmod,int mobAC,bool& victory){
+    //roll initiative
+    
+    char move='0';
+    bool helped=false;
+    int pInitv=d20(1)+abltmod;//player initiative plus dexterity
+    int mInitv=d20(1);//mob initiative (no dex bonus because inn mobs are unspecial
+    if (pInitv>mInitv){//Player goes first
+        do{
+            //Player Move
+            if(health>0){
+                cout<<"COMBAT";
+                cout<<setw(94)<<"Make a decision."<<endl;
+                cout<<setw(100)<<"Attack with my sword - PRESS 1"<<endl;
+                cout<<setw(100)<<"Attack with my dagger - PRESS 2"<<endl;
+                cout<<setw(100)<<"Run away! - PRESS 3"<<endl;
+                cout<<setw(100)<<"Signal to your helper for assistance - PRESS 4"<<endl;
+                cout<<setw(100)<<"Use a health potion - PRESS 5"<<endl;
+                cin>>move;
+                switch (move){
+                    case '1':{//Sword Attack
+                        if(check(mobAC,abltmod,weapon)==true){
+                            int total=0;
+                            if (helped==true){
+                                    total=d6(3)+//Sneak Attack
+                                    d4(1)+2;//Helper's Damage
+                            }
+                            int damage=dmg(total,abltmod,rapier());
+                            cout<<"You hit dealing "<<damage<<" damage."<<endl;
+                            mobhlth-=damage;
+                        }else cout<<"You missed"<<endl;
+                        break;
+                    }
+                    case '2':{//Dagger Attack
+                        if(check(mobAC,abltmod,weapon)==true){
+                            int total=0;
+                            if (helped==true){
+                                    total=d6(3)+//Sneak Attack
+                                    d4(1);//Helper's Damage
+                            }
+                            int damage=dmg(total,abltmod,rapier());
+                            cout<<"You hit dealing "<<damage<<" damage."<<endl;
+                            mobhlth-=damage;
+                        }else cout<<"You missed"<<endl;
+                        break;
+                    }
+                    case '3':{//Run away little girl, run away
+                        cout<<"You run out of the inn and everybody laughs at you";
+                        cout<<endl;
+                        health=0;
+                        mobhlth=0;
+                        break;
+                    }
+                    case '4':{//Call for help
+                        cout<<"You execute the agreed upon signal to call "
+                                "for assistance"<<endl;
+                        if(helped==true){cout<<"but your helper is already "
+                                "involved, quit wasting time!"<<endl;
+                        }else {cout<<"and your helper joins the fight."<<endl;
+                        helped=true;
+                        break;
+                        }
+                    }
+                    case '5':{//Use Health Potion
+                        if(potions>=1){
+                            cout<<"You drink a health potion to regain some strength";
+                            cout<<endl;
+                            hlthpot(health,maxhlth,potions);
+                            cout<<"Your health is now "<<health<<endl;
+                        }else{
+                            cout<<"You have no more potions."<<endl;
+                        }break;
+                    }               
+                    default: cout<<"You failed to make a real decision."<<endl;
+                }
+            }//End Player's move
+            //Enemy's Move
+            if(mobhlth>0){
+                if(rand()%10==0){
+                    cout<<"Your enemy picks up a chair and attempts to hit you with it"<<endl;
+                    if(check(plyrAC,cbtmod,0)==true){
+                            int total=0;
+                            int damage=dmg(total,cbtmod,d8(1)+3);
+                            cout<<"You are hit and receive "<<damage<<" damage."<<endl;
+                            health-=damage;
+                        }else cout<<"Your enemy missed"<<endl;
+                }else{
+                    cout<<"Your enemy attempts to punch you...";
+                    if(check(plyrAC,cbtmod,0)==true){
+                            int total=0;
+                            int damage=dmg(total,cbtmod,rapier());
+                            cout<<"you are hit and receive "<<damage<<" damage."<<endl;
+                            health-=damage;
+                        }else cout<<"but misses."<<endl;
+                }
+            } 
+            cout<<"Your health : "<<health<<"   Enemy's health : "<<mobhlth<<endl;
+        }while (health>0&&mobhlth>0);       
+    }else{
+        do{       
+        //Enemy's Move
+            if(mobhlth>0){
+                if(rand()%10==0){
+                    cout<<"Your enemy picks up a chair and attempts to hit you with it"<<endl;
+                    if(check(plyrAC,cbtmod,0)==true){
+                            int total=0;
+                            int damage=dmg(total,cbtmod,d8(1)+3);
+                            cout<<"You are hit and receive "<<damage<<" damage."<<endl;
+                            health-=damage;
+                        }else cout<<"Your enemy missed"<<endl;
+                }else{
+                    cout<<"Your enemy attempts to punch you...";
+                    if(check(plyrAC,cbtmod,0)==true){
+                            int total=0;
+                            int damage=dmg(total,cbtmod,rapier());
+                            cout<<"you are hit and receive "<<damage<<" damage."<<endl;
+                            health-=damage;
+                        }else cout<<"but misses."<<endl;
+                }
+            }
+            //Player Move
+            if(health>0){
+                cout<<"COMBAT";
+                cout<<setw(94)<<"Make a decision."<<endl;
+                cout<<setw(100)<<"Attack with my sword - PRESS 1"<<endl;
+                cout<<setw(100)<<"Attack with my dagger - PRESS 2"<<endl;
+                cout<<setw(100)<<"Run away! - PRESS 3"<<endl;
+                cout<<setw(100)<<"Signal to your helper for assistance - PRESS 4"<<endl;
+                cout<<setw(100)<<"Create a distraction - PRESS 5"<<endl;
+                cin>>move;
+                switch (move){
+                    case '1':{//Sword Attack
+                        if(check(mobAC,abltmod,weapon)==true){
+                            int total=0;
+                            if (helped==true){
+                                    total=d6(3)+//Sneak Attack
+                                    d4(1);//Helper's Damage
+                            }
+                            int damage=dmg(total,abltmod,rapier());
+                            cout<<"You hit dealing "<<damage<<" damage."<<endl;
+                            mobhlth-=damage;
+                        }else cout<<"You missed"<<endl;
+                        break;
+                    }
+                    case '2':{//Dagger Attack
+                        if(check(mobAC,abltmod,weapon)==true){
+                            int total=0;
+                            if (helped==true){
+                                    total=d6(3)+//Sneak Attack
+                                    d4(1)+2;//Helper's Damage
+                            }
+                            int damage=dmg(total,abltmod,rapier());
+                            cout<<"You hit dealing "<<damage<<" damage."<<endl;
+                            mobhlth-=damage;
+                        }else cout<<"You missed"<<endl;
+                        break;
+                    }
+                    case '3':{//Run away little girl, run away
+                        cout<<"You run out of the inn and everybody laughs at you";
+                        cout<<endl;
+                        health=0;
+                        mobhlth=0;
+                        break;
+                    }
+                    case '4':{//Call for help
+                        cout<<"You execute the agreed upon signal to call "
+                                "for assistance"<<endl;
+                        if(helped==true){cout<<"but your helper is already "
+                                "involved, quit wasting time!"<<endl;
+                        }else {cout<<"and your helper joins the fight."<<endl;
+                        helped=true;                        
+                        }break;
+                    }
+                    case '5':{//Use Health Potion
+                        if(potions>=1){
+                            cout<<"You drink a health potion to regain some strength";
+                            cout<<endl;
+                            hlthpot(health,maxhlth,potions);
+                            cout<<"Your health is now "<<health<<endl;
+                        }else{
+                            cout<<"You have no more potions."<<endl;
+                        }break;
+                    }
+                    default: cout<<"You failed to make a real decision."<<endl;
+                }
+            }//End Player's move
+            cout<<"Your health : "<<health<<"   Enemy's health : "<<mobhlth<<endl;
+            if (health<=0)victory=false;
+        }while (health>0&&mobhlth>0);
+    }    
+    abs(gold);
+    return gold,health,potions,victory;
+}
+//Mechanics and Rules
 int d4(int nDice){ 
     int total=0;
     for(int i=1;i<=nDice;i++){
@@ -352,309 +709,10 @@ int shrtbow(){
 int fists(){
     return d4(1);
 }
-int hlthpot(int health){
+int hlthpot(int& health,int& maxhlth,int& potions){
     health+=d4(4);
-    return health;
-}
-//Gambling Games
-bool guesNum(int gold,int table,int chamod,int decptn){//Character's Gold, Possible gold at the table
-    char stay=1;
-    int beer=0;
-    int wager=0;
-    int wins=0,losses=0;
-    char num;
-    char action='0';
-    do{
-        cout<<"Table : "<<table<<" Beers : "<<beer<<" Wins : "<<wins<<" Losses : "<<losses<<endl;
-        cout<<setw(100)<<"Would you like to buy a round for the table for be 5 gold?"<<endl;
-        cout<<setw(100)<<"Yes - PRESS 1"<<endl;
-        cout<<setw(100)<<"No - PRESS 2"<<endl;
-        cin>>action;
-        if (action=='1'){
-            cout<<"You buy a round of ale for the table."<<endl;
-            cout<<setw(100)<<"The table of risk takers thank you kindly and"
-                    " urge you on to the next game."<<endl;
-            beer++;
-        }else{
-            cout<<"You politely decline the suggestion and things continue as"
-                    " they were."<<endl;
-        }
-        cout<<setw(100)<<"Make a wager"<<endl;
-        cout<<"Wager : ";
-        cin>>wager;
-        while(wager>table){
-            cout<<setw(100)<<"There isn't that much gold left on the table. "
-                    "Try wagering less."<<endl;
-            cin>>wager;
-        }
-        cout<<setw(100)<<"Okay pal, now pick a number 1-3 and lets see if we can guess it"<<endl;
-        cout<<"Your number : ";
-        cin>>num;
-        while(num>'3'||num<'1'){
-            cout<<setw(100)<<"Come on, pick a number between 1 and 3, this isn't the "
-                    "part you get to cheat on."<<endl;
-            cout<<"Your number : ";
-            cin>>num;
-        }
-        int guess=rand()%3+1;
-        cout<<setw(98)<<"Is your number "<<static_cast<char>(guess+48)<<"?"<<endl;
-        if(!(num==static_cast<char>(guess+48))){
-            gold+=wager;
-            table-=wager;
-            wins++;
-            cout<<"No."<<endl;
-            cout<<"You won honestly...neat! Now you have "<<gold;
-            cout<<" gold."<<endl;
-        }else{
-            cout<<setw(100)<<"Do you want to tell the truth or lie?"<<endl;
-            cout<<setw(100)<<"Check Difficulty is : "<<((10-beer+wins-losses)*(1+wager/table))<<endl;
-            cout<<setw(100)<<"Lie - PRESS 1"<<endl;
-            cout<<setw(100)<<"Lie - PRESS 2"<<endl;
-            cout<<setw(100)<<"Lie - PRESS 3"<<endl;
-            cout<<setw(100)<<"Lie - PRESS 4"<<endl;
-            cout<<setw(100)<<"Tell Truth - PRESS 5"<<endl;
-            cin>>action;
-            if (action=='5'){
-                cout<<"You admit the truth and share with them that they"
-                        " guessed correctly, your pockets are lighter"<<endl;
-                cout<<"but so is you hearth for all that will get you."<<endl;
-                gold-=wager;
-                table+=wager;
-                losses--;
-                cout<<"Now you have "<<gold<<" gold."<<endl;
-            }else{                     
-                cout<<"You decided to lie, of course you did. Simple games require"
-                        "simple lies, you respond with a simple 'No'"<<endl;
-                /*Difficulty of deception check rises when a larger percentage
-                 * of the table's money is at stake and when you have won several
-                 * times. Losing occasionally lowers their suspicion, but so does
-                 * beer.
-                 */       
-                if (check((10+wins*2-beer-losses/2)*(1+wager/table),chamod,decptn)==true){ 
-                    cout<<"The gamblers are disappointed but they believe you."<<endl;
-                    gold+=wager;
-                    table-=wager;
-                    wins++;
-                    cout<<"Now you have "<<gold<<" gold."<<endl;
-                }else{ //Combat!!!
-                    bool combat=true;
-                    gold-=wager;
-                    gold*=(-1);
-                }
-                    
-            }
-
-        }
-        if (gold>0){
-        cout<<setw(100)<<"Do you want to stay at the table?"<<endl;
-        cout<<setw(100)<<"Stay - PRESS 1"<<endl;
-        cout<<setw(100)<<"Leave - PRESS 2"<<endl;
-        cin>>stay;
-        }
-    }while (stay=='1'||combat==false);
-    return gold;           
-}
-    
-int combat(int health,int maxhlth,int potions,int abltmod,int plyrAC,int weapon,
-        int mobhlth,int cbtmod,int mobAC){
-    //roll initiative
-    
-    char move='0';
-    bool helped=false;
-    int pInitv=d20(1)+abltmod;//player initiative plus dexterity
-    int mInitv=d20(1);//mob initiative (no dex bonus because inn mobs are unspecial
-    if (pInitv>mInitv){//Player goes first
-        do{
-            //Player Move
-            if(health>0){
-                cout<<"COMBAT";
-                cout<<setw(94)<<"Make a decision."<<endl;
-                cout<<setw(100)<<"Attack with my sword - PRESS 1"<<endl;
-                cout<<setw(100)<<"Attack with my dagger - PRESS 2"<<endl;
-                cout<<setw(100)<<"Run away! - PRESS 3"<<endl;
-                cout<<setw(100)<<"Signal to your helper for assistance - PRESS 4"<<endl;
-                cout<<setw(100)<<"Use a health potion - PRESS 5"<<endl;
-                cin>>move;
-                switch (move){
-                    case '1':{//Sword Attack
-                        if(check(mobAC,abltmod,weapon)==true){
-                            int total=0;
-                            if (helped==true){
-                                    total=d6(3)+//Sneak Attack
-                                    d4(1)+2;//Helper's Damage
-                            }
-                            int damage=dmg(total,abltmod,rapier());
-                            cout<<"You hit dealing "<<damage<<" damage."<<endl;
-                            mobhlth-=damage;
-                        }else cout<<"You missed"<<endl;
-                        break;
-                    }
-                    case '2':{//Dagger Attack
-                        if(check(mobAC,abltmod,weapon)==true){
-                            int total=0;
-                            if (helped==true){
-                                    total=d6(3)+//Sneak Attack
-                                    d4(1)+2;//Helper's Damage
-                            }
-                            int damage=dmg(total,abltmod,rapier());
-                            cout<<"You hit dealing "<<damage<<" damage."<<endl;
-                            mobhlth-=damage;
-                        }else cout<<"You missed"<<endl;
-                        break;
-                    }
-                    case '3':{//Run away little girl, run away
-                        cout<<"You run out of the inn and everybody laughs at you";
-                        cout<<endl;
-                        health=0;
-                        mobhlth=0;
-                        break;
-                    }
-                    case '4':{//Call for help
-                        cout<<"You execute the agreed upon signal to call "
-                                "for assistance"<<endl;
-                        if(helped==true){cout<<"but your helper is already "
-                                "involved, quit wasting time!"<<endl;
-                        }else {cout<<"and your helper joins the fight."<<endl;
-                        helped=true;
-                        break;
-                        }
-                    }
-                    case '5':{//Use Health Potion
-                        cout<<"You drink a health potion to regain some strength";
-                        cout<<endl;
-                        health=fmin(hlthpot(health),maxhlth);
-                        cout<<"Your health is now "<<health<<endl;
-                        potions--;
-                        break;
-                    }               
-                    default: cout<<"You failed to make a real decision."<<endl;
-                }
-            }//End Player's move
-            //Enemy's Move
-            if(mobhlth>0){
-                if(rand()%10==0){
-                    cout<<"Your enemy picks up a chair and attempts to hit you with it"<<endl;
-                    if(check(plyrAC,cbtmod,0)==true){
-                            int total=0;
-                            int damage=dmg(total,cbtmod,rapier());
-                            cout<<"You are hit and recieve "<<damage<<" damage."<<endl;
-                            health-=damage;
-                        }else cout<<"Your enemy missed"<<endl;
-                }else{
-                    cout<<"Your enemy attempts to punch you...";
-                    if(check(plyrAC,cbtmod,0)==true){
-                            int total=0;
-                            int damage=dmg(total,cbtmod,rapier());
-                            cout<<"you are hit and recieve "<<damage<<" damage."<<endl;
-                            health-=damage;
-                        }else cout<<"but misses."<<endl;
-                }
-            } 
-            cout<<"Your health : "<<health<<"   Enemy's health : "<<mobhlth<<endl;
-        }while (health>0&&mobhlth>0);       
-    }else{
-        do{       
-        //Enemy's Move
-            if(mobhlth>0){
-                if(rand()%10==0){
-                    cout<<"Your enemy picks up a chair and attempts to hit you with it"<<endl;
-                    if(check(plyrAC,cbtmod,0)==true){
-                            int total=0;
-                            int damage=dmg(total,cbtmod,rapier());
-                            cout<<"You are hit and recieve "<<damage<<" damage."<<endl;
-                            health-=damage;
-                        }else cout<<"Your enemy missed"<<endl;
-                }else{
-                    cout<<"Your enemy attempts to punch you...";
-                    if(check(plyrAC,cbtmod,0)==true){
-                            int total=0;
-                            int damage=dmg(total,cbtmod,rapier());
-                            cout<<"you are hit and recieve "<<damage<<" damage."<<endl;
-                            health-=damage;
-                        }else cout<<"but misses."<<endl;
-                }
-            }
-            //Player Move
-            if(health>0){
-                cout<<"COMBAT";
-                cout<<setw(94)<<"Make a decision."<<endl;
-                cout<<setw(100)<<"Attack with my sword - PRESS 1"<<endl;
-                cout<<setw(100)<<"Attack with my dagger - PRESS 2"<<endl;
-                cout<<setw(100)<<"Run away! - PRESS 3"<<endl;
-                cout<<setw(100)<<"Signal to your helper for assistance - PRESS 4"<<endl;
-                cout<<setw(100)<<"Create a distraction - PRESS 5"<<endl;
-                cin>>move;
-                switch (move){
-                    case '1':{//Sword Attack
-                        if(check(mobAC,abltmod,weapon)==true){
-                            int total=0;
-                            if (helped==true){
-                                    total=d6(3)+//Sneak Attack
-                                    d4(1)+2;//Helper's Damage
-                            }
-                            int damage=dmg(total,abltmod,rapier());
-                            cout<<"You hit dealing "<<damage<<" damage."<<endl;
-                            mobhlth-=damage;
-                        }else cout<<"You missed"<<endl;
-                        break;
-                    }
-                    case '2':{//Dagger Attack
-                        if(check(mobAC,abltmod,weapon)==true){
-                            int total=0;
-                            if (helped==true){
-                                    total=d6(3)+//Sneak Attack
-                                    d4(1)+2;//Helper's Damage
-                            }
-                            int damage=dmg(total,abltmod,rapier());
-                            cout<<"You hit dealing "<<damage<<" damage."<<endl;
-                            mobhlth-=damage;
-                        }else cout<<"You missed"<<endl;
-                        break;
-                    }
-                    case '3':{//Run away little girl, run away
-                        cout<<"You run out of the inn and everybody laughs at you";
-                        cout<<endl;
-                        health=0;
-                        mobhlth=0;
-                        break;
-                    }
-                    case '4':{//Call for help
-                        cout<<"You execute the agreed upon signal to call "
-                                "for assistance"<<endl;
-                        if(helped==true){cout<<"but your helper is already "
-                                "involved, quit wasting time!"<<endl;
-                        }else {cout<<"and your helper joins the fight."<<endl;
-                        helped=true;
-                        break;
-                        }
-                    }
-                    case '5':{//Use Health Potion
-                        cout<<"You drink a health potion to regain some strength";
-                        cout<<endl;
-                        health=fmin(hlthpot(health),maxhlth);
-                        cout<<"Your health is now "<<health<<endl;
-                        potions--;
-                        break;
-                    }
-                    default: cout<<"You failed to make a real decision."<<endl;
-                }
-            }//End Player's move
-            cout<<"Your health : "<<health<<"   Enemy's health : "<<mobhlth<<endl;
-        }while (health>0&&mobhlth>0);
-    }
-    if (health==0&&mobhlth==0){
-        cout<<"Running from a fight is not necessarily a bad decision but it"
-                "will end your night."<<endl;
-        cout<<"You cannot go back into the in for the shame would be too much."
-                " You eventually put together a workable disguise and return to"
-                " the room you rented."<<endl;
-    }
-    else if (health<=0){
-        cout<<"You lost the fight and were thrown out of the inn"<<endl;
-    }
-    else if (mobhlth<=0){
-        cout<<"You defeated your enemy. Collect your gold and"
-                " go about your business."<<endl;
-    }
+    if (health>=maxhlth)health=maxhlth;
+    potions--;
+    cout<<"You have "<<potions<<" left!"<<endl;
     return health;
 }
