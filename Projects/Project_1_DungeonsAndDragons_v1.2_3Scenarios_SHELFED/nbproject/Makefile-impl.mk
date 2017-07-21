@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=Project_1_DungeonsAndDragons_v1.2
+PROJECTNAME=Project_1_DungeonsAndDragons_v1.2_3Scenarios_SHELFED
 
 # Active Configuration
 DEFAULTCONF=Debug
