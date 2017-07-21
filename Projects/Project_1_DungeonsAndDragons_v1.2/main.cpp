@@ -363,7 +363,7 @@ cout<<"You have "<<gold<<" gold and your night in the inn is over."<<endl;
 cout<<endl;
 cout<<setw(50)<<"GAME OVER"<<endl;
 ofstream scores;
-  scores.open ("scores.txt");
+  scores.open ("scores.txt",std::ios::app);
   scores <<name<<" finished with "<<gold<<" gold."<<endl;
   scores.close();
         
