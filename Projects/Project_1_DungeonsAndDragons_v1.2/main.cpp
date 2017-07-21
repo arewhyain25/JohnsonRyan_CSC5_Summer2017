@@ -128,11 +128,17 @@ int main(int argc, char** argv) {
                switch(action){
                    case '1':{//Gambling
                         //file describing gambling "guess the number"
-                       cout<<"You step up to the table of gamblers."<<endl;
+                       if(fight==true){
+                           cout<<"There is no one gambling, the fight made "
+                                   "everyone move on to new things for the evening."
+                                   <<endl;
+                           table=0;
+                       }                       
                        if (table<=0){//Prevent's taking money from house that isn't there
-                            cout<<setw(100)<<"The table is tapped out, haven't you done"
+                            cout<<setw(100)<<"There is no money at the table, haven't you done"
                                     " enough?"<<endl;
                         }
+                       cout<<"You step up to the table of gamblers."<<endl;
                        guesNum(gold,table,chamod,decptn,wager);
                        if (gold<0){//You are fighting the gambler (Health=20,mod=1,AC=14)
                            gold=abs(gold);
@@ -322,8 +328,7 @@ bool guesNum(int& gold,float& table,int chamod,int decptn,int& wager){//Characte
     char num;
     char action='0';
     if(table<=0){
-        cout<<setw(100)<<"The table is tapped, you've taken it all already, "
-                "move along."<<endl;
+        cout<<setw(100)<<"..."<<endl;
     }else if (gold<=0){
         cout<<setw(100)<<"You can't gamble if you don't have anything to "
                 "wager, move along."<<endl;
