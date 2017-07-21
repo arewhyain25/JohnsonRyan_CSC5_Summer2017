@@ -29,9 +29,9 @@ bool check(int,int,int);//Set check difficulty,add bonuses, test for success
 int abltmod(int);//determine modifier from ability scores
 int dmg(int,int,int);//Roll + Ability Modifier + Bonus
 int rapier();
-int dagger();;
+int dagger();
 int fists();
-int combat(int&,int&,int,int&,int,int,int,int,int,int,bool&);
+int combat(int&,int&,int,int&,int,int,int,int,int,int,bool&,bool&);
 int hlthpot(int&,int&,int&);
 bool guesNum(int&,float&,int,int,int&);//Guess the number
 
@@ -44,12 +44,12 @@ int main(int argc, char** argv) {
     //Declare and Initialize variables
     char action=0;
         //Character Ability Scores
-        int str=10,//Strength
-            dex=16,//Dexterity
-            con=10,//Constitution
-            intl=14,//Intellect
-            wis=13,//Wisdom
-            cha=14;//Charisma
+        const int str=10,//Strength
+                  dex=16,//Dexterity
+                  con=10,//Constitution
+                  intl=14,//Intellect
+                  wis=13,//Wisdom
+                  cha=14;//Charisma
 
         //Ability Modifiers
         int strmod=abltmod(str);
@@ -105,10 +105,10 @@ int main(int argc, char** argv) {
                          //After fighting.
         //I/O Files
         string instrng="";
+        
     //Intro
     ifstream intro;  
-    intro.open("intro.txt");
-    
+    intro.open("intro.txt");    
     while(!intro.eof())
         {
         getline(intro, instrng);
@@ -148,15 +148,7 @@ int main(int argc, char** argv) {
                    cin>>action;                   
                }
                switch(action){
-                   case '1':{//Gambling
-                        ifstream gambling;  
-                        gambling.open("gambling.txt");
-                        while(!gambling.eof())
-                            {
-                            getline(gambling,instrng);
-                            cout <<instrng<<endl;
-                            }
-                            gambling.close(); 
+                   case '1':{//Gambling                         
                        if(fight==true){
                            cout<<"There is no one gambling, the fight made "
                                    "everyone move on to new things for the evening."
@@ -167,12 +159,12 @@ int main(int argc, char** argv) {
                             cout<<setw(100)<<"There is no money at the table, "
                                     "haven't you done"
                                     " enough?"<<endl;
-                        }
-                       cout<<"You step up to the table of gamblers."<<endl;
+                       }
                        guesNum(gold,table,chamod,decptn,wager);
                        if (gold<0){//You are fighting the gambler (Health=20,mod=1,AC=14)
-                           gold=abs(gold);
-                            combat(gold,health,maxhlth,potions,dexmod,armor,fweapon,20,1,14,victory);
+                           gold=abs(gold);//Return gold to positive if negative
+                            combat(gold,health,maxhlth,potions,dexmod,armor,
+                                    fweapon,20,1,14,victory,helped);
                             //Player's Gold, Current Health, Max Health, # of Potions,
                             //Combat Modifier, and Armor Class;
                             //Mob's Health, Combat Modifier, and Armor Class;
@@ -296,7 +288,8 @@ int main(int argc, char** argv) {
                                              cout<<"The ring was worth "<<worth<<" gold."<<endl;
                                              gold+=worth;
                                        }else{//Combat!!!You're fighting Lover-Boy (health=14,mod=0,ac=12)
-                                           combat(gold,health,maxhlth,potions,dexmod,armor,fweapon,14,0,12,victory);
+                                           combat(gold,health,maxhlth,potions,dexmod,
+                                                   armor,fweapon,14,0,12,victory,helped);
                                                 //Player's Gold, Current Health, Max Health, # of Potions,
                                                 //Combat Modifier, and Armor Class;
                                                 //Mob's Health, Combat Modifier, and Armor Class;
@@ -366,9 +359,14 @@ int main(int argc, char** argv) {
                    }
                }            
             }while(health>0&&victory==true);
-cout<<"You have "<<gold<<"gold and your night in the inn is over."<<endl;
+cout<<"You have "<<gold<<" gold and your night in the inn is over."<<endl;
 cout<<endl;
 cout<<setw(50)<<"GAME OVER"<<endl;
+ofstream scores;
+  scores.open ("scores.txt");
+  scores <<name<<" finished with "<<gold<<" gold."<<endl;
+  scores.close();
+        
        
    //Exit stage right!
     return 0;
@@ -376,7 +374,8 @@ cout<<setw(50)<<"GAME OVER"<<endl;
 //Scenarios:
 
 //Gambling Games
-bool guesNum(int& gold,float& table,int chamod,int decptn,int& wager){//Character's Gold, Possible gold at the table
+bool guesNum(int& gold,float& table,int chamod,int decptn,int& wager){
+                //Character's Gold, Possible gold at the table
     char stay=1;
     int beer=0;
     int wins=0,losses=0;
@@ -388,6 +387,15 @@ bool guesNum(int& gold,float& table,int chamod,int decptn,int& wager){//Characte
         cout<<setw(100)<<"You can't gamble if you don't have anything to "
                 "wager, move along."<<endl;
     }else{
+        string instrng="";
+        ifstream gambling;  
+        gambling.open("gambling.txt");
+        while(!gambling.eof())
+            {
+            getline(gambling,instrng);
+            cout <<instrng<<endl;
+            }
+            gambling.close();
         do{
             cout<<"|Table : "<<table<<" |Beers : "<<beer<<" |Wins : "<<wins<<" |Losses : "
                     <<losses<<"|"<<endl;
@@ -428,7 +436,8 @@ bool guesNum(int& gold,float& table,int chamod,int decptn,int& wager){//Characte
             }
             gold-=wager;//Player Ante
             table-=wager;//Table Ante
-            cout<<setw(100)<<"Okay pal, now pick a number 1-3 and lets see if we can guess it"<<endl;
+            cout<<setw(100)<<"Okay pal, now pick a number between 1-3 and lets"
+                    " see if we can guess it"<<endl;
             cout<<"Your number : ";
             cin>>num;
             while(num>'3'||num<'1'){
@@ -447,7 +456,9 @@ bool guesNum(int& gold,float& table,int chamod,int decptn,int& wager){//Characte
                 cout<<" gold."<<endl;
             }else{
                 cout<<setw(100)<<"Do you want to tell the truth or lie?"<<endl;
-                cout<<setw(100)<<"Check Difficulty is : "<<((10-beer+wins-losses)*(1+wager/table))<<endl;
+                float dfclty=((10-beer+wins-losses)*(1+wager/table));
+                cout<<setw(98)<<"Check Difficulty is : "<<fixed;
+                cout<<setprecision(0)<<dfclty<<endl;
                 cout<<setw(100)<<"Lie - PRESS 1"<<endl;
                 cout<<setw(100)<<"Lie - PRESS 2"<<endl;
                 cout<<setw(100)<<"Lie - PRESS 3"<<endl;
@@ -497,11 +508,10 @@ bool guesNum(int& gold,float& table,int chamod,int decptn,int& wager){//Characte
 }
 //If Combat is necessary    
 int combat(int& gold,int& health,int maxhlth,int& potions,int abltmod,int plyrAC,int weapon,
-        int mobhlth,int cbtmod,int mobAC,bool& victory){
+        int mobhlth,int cbtmod,int mobAC,bool& victory,bool& helped){
     //roll initiative
     
     char move='0';
-    bool helped=false;
     int pInitv=d20(1)+abltmod;//player initiative plus dexterity
     int mInitv=d20(1);//mob initiative (no dex bonus because inn mobs are unspecial
     if (pInitv>mInitv){//Player goes first
