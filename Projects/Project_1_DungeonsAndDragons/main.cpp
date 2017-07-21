@@ -34,7 +34,7 @@ int shrtbow();
 int fists();
 int combat(int&,int&,int,int&,int,int,int,int,int,int,bool&);
 int hlthpot(int&,int&,int&);
-bool guesNum(int&,float&,int,int);//Guess the number
+bool guesNum(int&,float&,int,int,int&);//Guess the number
 
 //Execution begins here
 int main(int argc, char** argv) {
@@ -100,16 +100,9 @@ int main(int argc, char** argv) {
         float table=2000;//Available gold in the Inn
         int ring=1;//Limits the occurrence of the ring theft
         bool victory=true;//Condition set by combat resolution
-    //Combat Test    ******************************                 ******************************          
-   // health=combat(health,dexmod,maxhlth,potions,armor,fweapon,20,0,12);
-                        //Player's health,max health, number of potions,
-                        //Players Combat Modifier, Player's Armor Class;
-                        //Mob's health,mob's combat modifier,mobs Armor Class;
-    
-    /*if(check(15,dexmod,fweapon)==true){
-        
-    }else 
-    */
+        int wager=0;
+        bool fight=false;//Prevents player from returning to the gambling table 
+                         //After fighting.
     
     //Input data
     //****************File for Arrival**************
@@ -140,13 +133,13 @@ int main(int argc, char** argv) {
                             cout<<setw(100)<<"The table is tapped out, haven't you done"
                                     " enough?"<<endl;
                         }
-                       guesNum(gold,table,chamod,decptn);
+                       guesNum(gold,table,chamod,decptn,wager);
                        if (gold<0){//You are fighting the gambler (Health=20,mod=1,AC=14)
+                           gold=abs(gold);
                             combat(gold,health,maxhlth,potions,dexmod,armor,fweapon,20,1,14,victory);
                             //Player's Gold, Current Health, Max Health, # of Potions,
                             //Combat Modifier, and Armor Class;
                             //Mob's Health, Combat Modifier, and Armor Class;
-                            abs(gold);
                             if (victory==false&&health>0){
                                 cout<<"Running from a fight is not necessarily a bad decision but it"
                                         "will end your night at least you kept"<<endl;
@@ -160,14 +153,19 @@ int main(int argc, char** argv) {
                                 cout<<"You lost half of your money in the exchange."<<endl;
                                 gold/=2;                                
                             }else {
-                                cout<<"You defeated your enemy. Collect what gold you can find on the ground"
+                                cout<<"You defeated the suspicious gamblers. Collect what gold you can find on the ground"
                                         " and go about your business."<<endl;
-                                gold+=(rand()%20+1)*3;//Randomize gold recovered just the a DM would
+                                cout<<"Fights over gambling are common and while everyone is a bit wary of you,"
+                                        " no one is giving you trouble."<<endl;
+                                int find=(wager*2-wager/d20(1));//Randomize gold recovered just the a DM would
+                                gold+=find;
+                                cout<<"You find "<<find<<" gold and now have "<<gold<<" total."<<endl;
                             }
                             if (helped==true){
                                 gold-=10;
                                 cout<<"You pay "+helper+" 10g."<<endl;
-                            }     
+                            }
+                            fight=true;
                             helped=false;    
                        }break;
                    }
@@ -242,8 +240,7 @@ int main(int argc, char** argv) {
                                             //Player's Gold, Current Health, Max Health, # of Potions,
                                             //Combat Modifier, and Armor Class;
                                             //Mob's Health, Combat Modifier, and Armor Class;
-                                       abs(gold);
-                                        if (victory==false&&health>0){
+                                       if (victory==false&&health>0){
                                             cout<<"Running from a fight is not necessarily a bad decision but it"
                                                     "will end your night at least you kept"<<endl;
                                             cout<<"the gold on your person. You cannot go back into the in "
@@ -317,7 +314,7 @@ cout<<setw(50)<<"GAME OVER"<<endl;
 //Scenarios:
 
 //Gambling Games
-bool guesNum(int& gold,float& table,int chamod,int decptn){//Character's Gold, Possible gold at the table
+bool guesNum(int& gold,float& table,int chamod,int decptn,int& wager){//Character's Gold, Possible gold at the table
     char stay=1;
     int beer=0;
     float wager=0;//Must be a float for Lie detector Difficulty to adjust properly
@@ -334,7 +331,7 @@ bool guesNum(int& gold,float& table,int chamod,int decptn){//Character's Gold, P
         do{
             cout<<"|Table : "<<table<<" |Beers : "<<beer<<" |Wins : "<<wins<<" |Losses : "
                     <<losses<<"|"<<endl;
-            cout<<setw(100)<<"Would you like to buy a round for the table for be 5 gold?"<<endl;
+            cout<<setw(100)<<"Would you like to buy a round for the table for  5g?"<<endl;
             cout<<setw(100)<<"Yes - PRESS 1"<<endl;
             cout<<setw(100)<<"No - PRESS 2"<<endl;
             cin>>action;
@@ -359,6 +356,12 @@ bool guesNum(int& gold,float& table,int chamod,int decptn){//Character's Gold, P
             }
             while(wager>gold){
                 cout<<setw(100)<<"Try as you may, you can't bet money you don't have."
+                        "Try wagering less."<<endl;
+                cout<<"Wager : ";
+                cin>>wager;
+            }
+            while(wager<=0){
+                cout<<setw(100)<<"That's not a real wager. "
                         "Try wagering less."<<endl;
                 cout<<"Wager : ";
                 cin>>wager;
@@ -400,7 +403,7 @@ bool guesNum(int& gold,float& table,int chamod,int decptn){//Character's Gold, P
                     cout<<"Now you have "<<gold<<" gold."<<endl;
                 }else{                     
                     cout<<"You decided to lie, of course you did. Simple games require"
-                            "simple lies, you respond with a simple 'No'"<<endl;
+                            " simple lies, you respond with a simple 'No'"<<endl;
                     /*Difficulty of deception check rises when a larger percentage
                      * of the table's money is at stake and when you have won several
                      * times. Losing occasionally lowers their suspicion, but so does
@@ -412,6 +415,9 @@ bool guesNum(int& gold,float& table,int chamod,int decptn){//Character's Gold, P
                         wins++;
                         cout<<"Now you have "<<gold<<" gold."<<endl;
                     }else{ //Combat!!!
+                        cout<<setw(100)<<"As convincing as you typically are they don't "
+                            "buy it. The biggest of the bunch"<<endl;
+                        cout<<setw(100)<<"flips the table over and attacks you."<<endl;
                         gold*=(-1);
                     }
 
@@ -426,7 +432,7 @@ bool guesNum(int& gold,float& table,int chamod,int decptn){//Character's Gold, P
             }
         }while (stay=='1'&&gold>0&&table>0);
     }
-    return gold,table;           
+    return gold,table,wager;           
 }
 //If Combat is necessary    
 int combat(int& gold,int& health,int maxhlth,int& potions,int abltmod,int plyrAC,int weapon,
