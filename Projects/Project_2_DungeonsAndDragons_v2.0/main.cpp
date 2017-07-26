@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
 
 
         //Character Features
-        int maxhlth=30;//Character's Health
+        int maxhlth=20;//Character's Health
         int health=maxhlth;//Character's current health
         int gold=50;//Starting gold
         int armor=16;//Character's Armor Class
@@ -105,7 +105,10 @@ int main(int argc, char** argv) {
                          //After fighting.
         //I/O Files
         string instrng="";
-        
+    cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
+                        "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
+                        "*/*/*/*/*/"<<endl;
+    cout<<endl;    
     //Intro
     ifstream intro;  
     intro.open("intro.txt");    
@@ -114,14 +117,24 @@ int main(int argc, char** argv) {
         getline(intro, instrng);
         cout<<instrng<<endl;
         }
-        intro.close();                
+        intro.close();   
+        cout<<endl;
+    cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
+            "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
+            "*/*/*/*/*/"<<endl;
+    cout<<endl;
     cout<<setw(100)<<"What name will you be going by this evening?"<<endl;
-    cin>>name;
+    getline(cin,name);
     cout<<setw(100)<<"Okay '"+name+"' and what is the name of your friend here?"<<endl;
-    cin>>helper;
-    cout<<setw(100)<<"Great well then Masters "+name+" and "+helper+" I will set your "
-            "things in your room upstairs."<<endl;
-    cout<<setw(100)<<"Please make yourselves at home in our humble common room"<<endl;    
+    getline(cin,helper);
+    cout<<setw(100)<<"Great well then Masters "+name+" and "+helper+" I will"<<endl;
+    cout<<setw(100)<<"set your things in your room upstairs."<<endl;
+    cout<<setw(100)<<"Please make yourselves at home in our humble common room"<<endl; 
+    cout<<endl;
+    cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
+                        "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
+                        "*/*/*/*/*/"<<endl;
+    cout<<endl;
     //Begin Play
             ifstream cmnroom;  
             cmnroom.open("cmnroom.txt");
@@ -131,6 +144,11 @@ int main(int argc, char** argv) {
                 cout <<instrng<<endl;
                 }
                 cmnroom.close(); 
+                cout<<endl;
+                cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
+                        "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
+                        "*/*/*/*/*/"<<endl;
+    cout<<endl;
     
             do{
                cout<<"|Health : "<<health<<"|Gold : "<<gold;
@@ -149,6 +167,10 @@ int main(int argc, char** argv) {
                    cout<<"Your choice of ACTION : ";
                    cin>>action;                   
                }
+               cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
+                        "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
+                        "*/*/*/*/*/"<<endl;
+               cout<<endl;
                switch(action){
                    case '1':{//Gambling                         
                        if(fight==true){
@@ -172,16 +194,12 @@ int main(int argc, char** argv) {
                             //Combat Modifier, and Armor Class;
                             //Mob's Health, Combat Modifier, and Armor Class;
                             if (victory==false&&health>0){
-                                cout<<"Running from a fight is not necessarily a"
-                                        " bad decision but it"
-                                        "will end your night at least you "
-                                        "kept"<<endl;
-                                cout<<"the gold on your person. You cannot go "
-                                        "back into the in "
+                                cout<<"Running from a fight is not necessarily a bad decision but it"
+                                        " will end your night at least you "<<endl;
+                                cout<<"kept the gold on your person. You cannot go back into the in "
                                         "for the shame would be too much."<<endl;
-                                cout<<"You eventually put together a workable "
-                                        "disguise and return to"
-                                        " the room you rented."<<endl;                                
+                                cout<<"You eventually put together a workable disguise and return to"
+                                        " the room you rented."<<endl;                               
                             }
                             else if (health<=0&&victory==false){
                                 cout<<"You lost the fight and were thrown out "
@@ -215,7 +233,11 @@ int main(int argc, char** argv) {
                            if (ring<1){
                                cout<<"There is nothing of interest at the bar."<<endl;
                            }else{
-                               ifstream loverboy;  
+                               cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
+                                        "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
+                                        "*/*/*/*/*/"<<endl;
+                               cout<<endl;
+                                               ifstream loverboy;  
                                loverboy.open("loverboy.txt");
                                while(!loverboy.eof())
                                    {
@@ -223,6 +245,10 @@ int main(int argc, char** argv) {
                                    cout <<instrng<<endl;
                                    }
                                    loverboy.close();
+                                   cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
+                                            "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
+                                            "*/*/*/*/*/"<<endl;
+                                   cout<<endl;
                             do{
                                 switch (beers){
                                     case 0:{
@@ -253,11 +279,13 @@ int main(int argc, char** argv) {
                                         cout<<"One more couldn't hurt..."<<endl;
                                         gold-=5;
                                         cout<<setw(100)<<"Oh that did it! He passed out."
-                                                " As he falls to the ground you pick him up"
-                                                " and set him back on the bar."<<endl;
+                                                " As he falls"<<endl;
+                                        cout<<setw(100)<<"to the ground you pick him up and set him "
+                                                "back on the bar."<<endl;
                                         cout<<setw(100)<<"Of course you also nicked the ring "
-                                                "in the process, hopefully its worth the gold "
-                                                "in beer you spent."<<endl;break;
+                                                "in the process, hopefully"<<endl;
+                                        cout<<setw(100)<<"its worth the gold in beer you spent."<<endl;
+                                        break;
                                     }
                                   default:
                                       cout<<"He's still passed out."<<endl;
@@ -273,7 +301,7 @@ int main(int argc, char** argv) {
                                switch (action){
                                    case '1':{
                                        if (beers==4){
-                                           cout<<"The bartender looks at you scornfully and "
+                                           cout<<setw(100)<<"The bartender looks at you scornfully and "
                                                    "declines to pour your friend another drink."
                                                    <<endl;
                                            beers++;
@@ -298,8 +326,8 @@ int main(int argc, char** argv) {
                                                 //Mob's Health, Combat Modifier, and Armor Class;
                                            if (victory==false&&health>0){
                                                 cout<<"Running from a fight is not necessarily a bad decision but it"
-                                                        "will end your night at least you kept"<<endl;
-                                                cout<<"the gold on your person. You cannot go back into the in "
+                                                        " will end your night at least you "<<endl;
+                                                cout<<"kept the gold on your person. You cannot go back into the in "
                                                         "for the shame would be too much."<<endl;
                                                 cout<<"You eventually put together a workable disguise and return to"
                                                         " the room you rented."<<endl; 
@@ -331,22 +359,30 @@ int main(int argc, char** argv) {
                                    }break;
                                    case '3':{
                                        if (beers>=4){
-                                           cout<<"The smart thing to do now is remove "
-                                                   "yourself from the situation and avoid "
-                                                   "notice."<<endl;
+                                           cout<<setw(100)<<"The smart thing to do now is remove "
+                                                   "yourself from the situation"<<endl;
+                                           cout<<setw(100)<<"and avoid further notice."<<endl;
                                            ring--;
                                            int worth=(rand()%20+1)*5;
                                              cout<<"The ring was worth "<<worth<<" gold."<<endl;
                                              gold+=worth;
                                        }else{
-                                       cout<<"You decide not to waste your time on the kid "
-                                               "and walk away, leaving him with his questionably"
-                                               " valued engagement ring."<<endl;
-                                       cout<<"Moments later the lucky lady arrives at the inn"
-                                               " and he promptly begins his proposal unable"
-                                               " to wait a second longer."<<endl;
-                                       cout<<"The woman sweetly laughs and accepts the proposal."
-                                               <<endl;
+                                           cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
+                                                    "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
+                                                    "*/*/*/*/*/"<<endl;
+                                           cout<<endl;
+                                       ifstream proposal;  
+                                        proposal.open("loverboy.txt");
+                                        while(!proposal.eof())
+                                            {
+                                            getline(proposal,instrng);
+                                            cout <<instrng<<endl;
+                                            }
+                                            proposal.close();
+                                            cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
+                                                    "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
+                                                    "*/*/*/*/*/"<<endl;
+                                            cout<<endl;
                                        ring--;
                                        }
                                    }break;
@@ -355,9 +391,10 @@ int main(int argc, char** argv) {
                        } 
                        
                    }break;
-                   default:{
+                   default:{                       
                        cout<<"After a long night you decide you've had you fill of the"
-                               " inn. You gather your things and head up stairs to"
+                               " inn."<<endl;
+                       cout<<"You gather your things and head up stairs to"
                                " your room."<<endl;
                        victory=false;//Ends Game        
                    }
@@ -365,10 +402,14 @@ int main(int argc, char** argv) {
             }while(health>0&&victory==true);
 cout<<"You have "<<gold<<" gold and your night in the inn is over."<<endl;
 cout<<endl;
+cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
+        "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
+        "*/*/*/*/*/"<<endl;
+cout<<endl;
 cout<<setw(50)<<"GAME OVER"<<endl;
 ofstream scores;
   scores.open ("scores.txt",std::ios::app);
-  scores <<name<<" ..... "<<gold<<" gold."<<endl;
+  scores <<setw(20)<<name<<setw(20)<<gold<<" gold."<<endl;
   scores.close();
         
        
@@ -391,6 +432,10 @@ bool guesNum(int& gold,float& table,int chamod,int decptn,int& wager){
         cout<<setw(100)<<"You can't gamble if you don't have anything to "
                 "wager, move along."<<endl;
     }else{
+        cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
+                        "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
+                        "*/*/*/*/*/"<<endl;
+        cout<<endl;
         string instrng="";
         ifstream gambling;  
         gambling.open("gambling.txt");
@@ -400,12 +445,18 @@ bool guesNum(int& gold,float& table,int chamod,int decptn,int& wager){
             cout <<instrng<<endl;
             }
             gambling.close();
+            cout<<endl;
+        cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
+                    "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
+                    "*/*/*/*/*/"<<endl;
+        cout<<endl;
         do{
             cout<<"|Table : "<<table<<"|Gold : "<<gold<<"|Beers : "<<beer<<" |Wins : "<<wins<<" |Losses : "
                     <<losses<<"|"<<endl;
             cout<<setw(100)<<"Would you like to buy a round for the table for  5g?"<<endl;
             cout<<setw(100)<<"Yes - PRESS 1"<<endl;
             cout<<setw(100)<<"No - PRESS 2"<<endl;
+            cout<<"Buy Round? ";
             cin>>action;
             if (action=='1'){
                 cout<<"You buy a round of ale for the table."<<endl;
@@ -419,14 +470,17 @@ bool guesNum(int& gold,float& table,int chamod,int decptn,int& wager){
             }
             cout<<setw(100)<<"Make a wager"<<endl;
             cout<<"Wager : ";
-            cin>>wager;
-            while(wager>table){
-                cout<<setw(100)<<"There isn't that much gold left on the table. "
-                        "Try wagering less."<<endl;
+            cin>>wager;            
+            while(!(wager<=table)||!(wager<=gold)||!(wager>0)||(cin.fail())){
+                cin.clear();//clears error thrown by cin.fail
+                cin.ignore();//allows acceptance of next entry
+                wager=0;
+                cout<<setw(100)<<"That's not a real wager. "
+                        "Try a different wager."<<endl;
                 cout<<"Wager : ";
                 cin>>wager;
             }
-            while(wager>gold){
+            /*while(wager>gold){
                 cout<<setw(100)<<"Try as you may, you can't bet money you don't have."
                         "Try wagering less."<<endl;
                 cout<<"Wager : ";
@@ -437,7 +491,7 @@ bool guesNum(int& gold,float& table,int chamod,int decptn,int& wager){
                         "Try wagering less."<<endl;
                 cout<<"Wager : ";
                 cin>>wager;
-            }
+            }*/
             gold-=wager;//Player Ante
             table-=wager;//Table Ante
             cout<<setw(100)<<"Okay pal, now pick a number between 1-3 and lets"
@@ -464,12 +518,9 @@ bool guesNum(int& gold,float& table,int chamod,int decptn,int& wager){
                 cout<<setw(98)<<"Check Difficulty is : "<<fixed;
                 cout<<setprecision(0)<<dfclty<<endl;
                 cout<<setw(100)<<"Lie - PRESS 1"<<endl;
-                cout<<setw(100)<<"Lie - PRESS 2"<<endl;
-                cout<<setw(100)<<"Lie - PRESS 3"<<endl;
-                cout<<setw(100)<<"Lie - PRESS 4"<<endl;
-                cout<<setw(100)<<"Tell Truth - PRESS 5"<<endl;
+                cout<<setw(100)<<"Tell Truth - PRESS 2"<<endl;
                 cin>>action;
-                if (action=='5'){
+                if (action=='2'){
                     cout<<"You admit the truth and share with them that they"
                             " guessed correctly, your pockets are lighter"<<endl;
                     cout<<"but so is you hearth for all that will get you."<<endl;
@@ -502,7 +553,12 @@ bool guesNum(int& gold,float& table,int chamod,int decptn,int& wager){
                 }
 
             }
-            if (gold>0){
+            if (table<=0){
+                cout<<setw(100)<<"'Well that's it for us!'"<<endl;
+                cout<<setw(100)<<"There is no more gold to be won here,"
+                        "time to move on."<<endl;
+            }            
+            if (gold>0&&table>0){
             cout<<setw(100)<<"Do you want to stay at the table?"<<endl;
             cout<<setw(100)<<"Stay - PRESS 1"<<endl;
             cout<<setw(100)<<"Leave - PRESS 2"<<endl;
@@ -645,7 +701,7 @@ int combat(int& gold,int& health,int maxhlth,int& potions,int abltmod,int plyrAC
                 cout<<setw(100)<<"Attack with my dagger - PRESS 2"<<endl;
                 cout<<setw(100)<<"Run away! - PRESS 3"<<endl;
                 cout<<setw(100)<<"Signal to your helper for assistance - PRESS 4"<<endl;
-                cout<<setw(100)<<"Create a distraction - PRESS 5"<<endl;
+                cout<<setw(100)<<"Use a health Potion - PRESS 5"<<endl;
                 cin>>move;
                 switch (move){
                     case '1':{//Sword Attack

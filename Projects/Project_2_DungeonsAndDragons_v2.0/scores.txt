@@ -1,8 +1,6 @@
-test1 ..... 50 gold.
-test2 ..... 50 gold.
-test3 ..... 50 gold.
-ryan ..... 187 gold.
-2 ..... 50 gold.
-RyanTest ..... 545 gold.
-Ryan ..... 125 gold.
-2 ..... 580 gold.
+		     Name				   Score
+
+                 Don                 635 gold.
+           fartblast                 100 gold.
+                butt                 359 gold.
+        Ryan Johnson                 385 gold.
