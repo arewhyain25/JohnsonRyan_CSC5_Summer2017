@@ -12,3 +12,8 @@
                 fart                 110
            CoolGuy69                 351
              BuyBeer                -135
+        FunctionTest                 505
+             Fighter                 265
+           NewCombat                 450
+        PracticeTest                   0
+          FinalScore                  50
