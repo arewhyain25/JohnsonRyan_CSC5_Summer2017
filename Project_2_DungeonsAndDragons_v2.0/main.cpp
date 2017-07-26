@@ -37,15 +37,17 @@ int hlthpot(int&,int&,int&);
 bool guesNum(int&,float&,int,int,int&);//Guess the number
 void scorSrt(int[],string[],int);//Sorting High Scores
 void play (int&,int&,int&,char&);//gold,health,potions,action
-void lvfool(int&,int&,int,int,int,int&,int,int,int,int&,bool,bool&,string,char&);
+void lvfool(int&,int&,int,int,int,int&,int,int,int&,int&,bool,bool&,string);
         //gold,health,max health,armor,finesse weapon,potions,dexterity mod,
         //sleight of hand,beers,ring,helped,victory,helper name
-void drnkCnt (int&,int);//gold,beers
+void drnkCnt (int&,int&);//gold,beers
 void buybeer (int&,int&);//gold,beers
-void getRing(int&,int&,int,int,int,int&,int,int,int,int&,bool,bool&,string);
+void getRing(int&,int&,int,int,int,int&,int,int,int&,int&,bool,bool&,string);
         //gold,health,max health,armor,finesse weapon,potions,dexterity mod,
         //sleight of hand,beers,ring,helped,victory,helper name
 void wlkaway(int&,int,int&);
+void border();
+
 //Execution begins here
 int main(int argc, char** argv) {
     //Setting the random number seed
@@ -115,24 +117,16 @@ int main(int argc, char** argv) {
                          //After fighting.
         //I/O Files
         string instrng="";
-    cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
-                        "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
-                        "*/*/*/*/*/"<<endl;
-    cout<<endl;    
+    border();    
     //Intro
     ifstream intro;  
     intro.open("intro.txt");    
-    while(!intro.eof())
-        {
+    while(!intro.eof()){
         getline(intro, instrng);
         cout<<instrng<<endl;
-        }
-        intro.close();   
-        cout<<endl;
-    cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
-            "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
-            "*/*/*/*/*/"<<endl;
-    cout<<endl;
+    }
+    intro.close();   
+    border();
     cout<<setw(100)<<"What name will you be going by this evening? (no spaces)"<<endl;
     getline(cin,name);
     cout<<setw(100)<<"Okay '"+name+"' and what is the name of your friend here? (no spaces)"<<endl;
@@ -140,11 +134,7 @@ int main(int argc, char** argv) {
     cout<<setw(100)<<"Great well then Masters "+name+" and "+helper+" I will"<<endl;
     cout<<setw(100)<<"set your things in your room upstairs."<<endl;
     cout<<setw(100)<<"Please make yourselves at home in our humble common room"<<endl; 
-    cout<<endl;
-    cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
-                        "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
-                        "*/*/*/*/*/"<<endl;
-    cout<<endl;
+    border();
     //Begin Play
             ifstream cmnroom;  
             cmnroom.open("cmnroom.txt");
@@ -154,10 +144,7 @@ int main(int argc, char** argv) {
                 cout <<instrng<<endl;
                 }
                 cmnroom.close(); 
-                cout<<endl;
-                cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
-                        "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
-                        "*/*/*/*/*/"<<endl;
+                border();
     cout<<endl;
     
             do{
@@ -225,10 +212,7 @@ int main(int argc, char** argv) {
                            if (ring<1){
                                cout<<"There is nothing of interest at the bar."<<endl;
                            }else{
-                               cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
-                                        "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
-                                        "*/*/*/*/*/"<<endl;
-                               cout<<endl;
+                               border();
                                ifstream loverboy;  
                                loverboy.open("loverboy.txt");
                                while(!loverboy.eof())
@@ -237,17 +221,14 @@ int main(int argc, char** argv) {
                                    cout <<instrng<<endl;
                                    }
                                    loverboy.close();
-                                   cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
-                                            "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
-                                            "*/*/*/*/*/"<<endl;
-                                   cout<<endl;
+                                   border();
                             do{
                                 drnkCnt (gold,beers);
                                 lvfool(gold,health,maxhlth,armor,fweapon,potions,
                                         dexmod,sltohnd,beers,ring,helped,victory,
-                                        helper,action);     
-                            }while (ring>=1);
-                       } 
+                                        helper);     
+                            }while (ring>=1&&gold>0);                            
+                            } 
                        
                    }break;
                    default:{                       
@@ -260,11 +241,7 @@ int main(int argc, char** argv) {
                }            
             }while(health>0&&victory==true);
 cout<<"You have "<<gold<<" gold and your night in the inn is over."<<endl;
-cout<<endl;
-cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
-        "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
-        "*/*/*/*/*/"<<endl;
-cout<<endl;
+border();
 cout<<setw(50)<<"GAME OVER"<<endl;
 ofstream scorBrd;
   scorBrd.open ("ScorBrd.txt",ios::app);
@@ -273,6 +250,7 @@ ofstream scorBrd;
   cout<<endl;
   
   //Sort and display leader board
+  border();
   cout<<setw(51)<<"High Scores"<<endl;
   cout<<setw(33)<<"Name"<<setw(30)<<"Gold Total"<<endl;
 ifstream showBrd; 
@@ -287,6 +265,7 @@ showBrd.open("ScorBrd.txt");
         showBrd>>scores[i];
     } 
     showBrd.close(); 
+    border();
     
     //Sort and Display Leader Board
     scorSrt(scores,names,SIZE);
@@ -338,18 +317,16 @@ void play (int &gold,int &health,int &potions,char &action){//gold,health,potion
                    cout<<"Your choice of ACTION : ";
                    cin>>action;                   
                }
-    cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
-            "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
-            "*/*/*/*/*/"<<endl;
-    cout<<endl; 
+    border(); 
 }
 
 //Scenarios:
 
 //The Love Fool Scenario
 void lvfool(int &gold,int &health,int maxhlth,int armor,int fweapon,
-        int &potions,int dexmod,int sltohnd,int beers,int &ring,
-        bool helped,bool &victory,string helper,char &action){
+        int &potions,int dexmod,int sltohnd,int &beers,int &ring,
+        bool helped,bool &victory,string helper){
+    char action='0';
     cout<<"|Health : "<<health<<"|Gold : "<<gold;
     cout<<"|Potions : "<<potions<<endl;
     cout<<setw(100)<<"Would you like to buy a round of drinks for 5g?"
@@ -378,7 +355,45 @@ void buybeer (int &gold, int &beers){
                 <<endl;        
     }else{
         beers++;
+        gold-=5;
     }
+}
+void drnkCnt (int &gold,int &beers){    
+    switch (beers){
+        case 0:{
+            cout<<setw(100)<<"Perhaps a nice cold ale"
+                    " will help calm his nerves."<<endl;break;
+        }
+        case 1:{
+            cout<<"You buy a round for the two of you."<<endl;
+            cout<<setw(100)<<"He seems to calm down and be more at ease."<<endl;
+            break;
+        }
+        case 2:{
+            cout<<"You buy another round."<<endl;
+            cout<<setw(100)<<"He's a little tipsy but no cause for worry."<<endl;
+            break;
+        }
+        case 3:{
+            cout<<"How about another! "<<endl;
+            cout<<setw(100)<<"'A terst!' he shouts!'Tuh th must butufl wemn "
+                    "IN th werld!'"<<endl;
+            cout<<setw(100)<<"Okay, he's drunk now and starting"
+                    " to attract attention."<<endl;break;
+        }
+        case 4:{
+            cout<<"One more couldn't hurt..."<<endl;
+            cout<<setw(100)<<"Oh that did it! He passed out. As he falls"<<endl;
+            cout<<setw(100)<<"to the ground you pick him up and set him "
+                    "back on the bar."<<endl;
+            cout<<setw(100)<<"Of course you also nicked the ring "
+                    "in the process, hopefully"<<endl;
+            cout<<setw(100)<<"its worth the gold in beer you spent."<<endl;
+            break;
+        }
+      default:
+          cout<<"He's still passed out."<<endl;
+    }    
 }
 void getRing(int &gold,int &health,int maxhlth,int armor,int fweapon,
         int &potions,int dexmod,int sltohnd,int beers,int &ring,
@@ -430,48 +445,7 @@ void getRing(int &gold,int &health,int maxhlth,int armor,int fweapon,
         helped=false;
     }
 }
-void drnkCnt (int &gold,int beers){
-    switch (beers){
-        case 0:{
-            cout<<setw(100)<<"Perhaps a nice cold ale"
-                    " will help calm his nerves."<<endl;break;
-        }
-        case 1:{
-            cout<<"You buy a round for the two of you."<<endl;
-            gold-=5;
-            cout<<setw(100)<<"He seems to calm down and "
-                    "be more at ease."<<endl;break;
-        }
-        case 2:{
-            cout<<"You buy another round."<<endl;
-            gold-=5;
-            cout<<setw(100)<<"Now he's getting tipsy but just "
-                    "a little goofy."<<endl;break;
-        }
-        case 3:{
-            cout<<"How about another! "<<endl;
-            cout<<setw(100)<<"'A tust' he shouts!"
-                    "'Tu th must butufl wemn IN th werld!'"<<endl;
-            gold-=5;
-            cout<<setw(100)<<"Okay, he's drunk now and starting"
-                    " to attract attention."<<endl;break;
-        }
-        case 4:{
-            cout<<"One more couldn't hurt..."<<endl;
-            gold-=5;
-            cout<<setw(100)<<"Oh that did it! He passed out."
-                    " As he falls"<<endl;
-            cout<<setw(100)<<"to the ground you pick him up and set him "
-                    "back on the bar."<<endl;
-            cout<<setw(100)<<"Of course you also nicked the ring "
-                    "in the process, hopefully"<<endl;
-            cout<<setw(100)<<"its worth the gold in beer you spent."<<endl;
-            break;
-        }
-      default:
-          cout<<"He's still passed out."<<endl;
-    }    
-}
+
 void wlkaway(int &gold,int beers, int &ring){
     if (beers>=4){
         cout<<setw(100)<<"The smart thing to do now is remove "
@@ -482,10 +456,7 @@ void wlkaway(int &gold,int beers, int &ring){
           cout<<"The ring was worth "<<worth<<" gold."<<endl;
           gold+=worth;
     }else{
-        cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
-                 "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
-                 "*/*/*/*/*/"<<endl;
-        cout<<endl;
+        border();
         string instrng="";
         ifstream proposal;  
         proposal.open("loverboy.txt");
@@ -495,10 +466,7 @@ void wlkaway(int &gold,int beers, int &ring){
          cout <<instrng<<endl;
          }
          proposal.close();
-         cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
-                 "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
-                 "*/*/*/*/*/"<<endl;
-         cout<<endl;
+         border();
     ring--;
     }
 }
@@ -929,4 +897,10 @@ int hlthpot(int& health,int& maxhlth,int& potions){
     potions--;
     cout<<"You have "<<potions<<" left!"<<endl;
     return health;
+}
+void border(){
+    cout<<endl;
+    cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
+            "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"<<endl;
+    cout<<endl;
 }

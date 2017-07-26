@@ -10,3 +10,5 @@
           swipeTest3                  70
    WalkerTexasWalker                  50
                 fart                 110
+           CoolGuy69                 351
+             BuyBeer                -135
