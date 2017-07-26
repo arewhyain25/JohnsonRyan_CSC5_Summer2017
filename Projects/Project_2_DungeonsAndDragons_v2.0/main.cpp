@@ -12,6 +12,7 @@
 #include <fstream>   //File I/O
 #include <iomanip>   //Format Library
 #include <cmath>     //Math Library
+#include <sstream>   //Stream Library
 using namespace std; //Name-space under which system libraries exist
 
 //User Libraries
@@ -34,6 +35,7 @@ int fists();
 int combat(int&,int&,int,int&,int,int,int,int,int,int,bool&,bool&);
 int hlthpot(int&,int&,int&);
 bool guesNum(int&,float&,int,int,int&);//Guess the number
+void scorSrt(int[],string[],int);//Sorting High Scores
 
 
 //Execution begins here
@@ -237,7 +239,7 @@ int main(int argc, char** argv) {
                                         "*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
                                         "*/*/*/*/*/"<<endl;
                                cout<<endl;
-                                               ifstream loverboy;  
+                               ifstream loverboy;  
                                loverboy.open("loverboy.txt");
                                while(!loverboy.eof())
                                    {
@@ -407,15 +409,60 @@ cout<<"/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
         "*/*/*/*/*/"<<endl;
 cout<<endl;
 cout<<setw(50)<<"GAME OVER"<<endl;
-ofstream scores;
-  scores.open ("scores.txt",std::ios::app);
-  scores <<setw(20)<<name<<setw(20)<<gold<<" gold."<<endl;
-  scores.close();
-        
+ofstream scorBrd;
+  scorBrd.open ("ScorBrd.txt",std::ios::app);
+  scorBrd <<setw(20)<<name<<setw(20)<<gold<<endl;
+  scorBrd.close();
+  cout<<endl;
+  
+  //Sort and display leader board
+  cout<<setw(51)<<"High Scores"<<endl;
+  cout<<setw(33)<<"Name"<<setw(30)<<"Gold Total"<<endl;
+ifstream showBrd; 
+int SIZE=10;
+string names[SIZE]={};
+int scores[SIZE]={};
+showBrd.open("ScorBrd.txt");
+
+    
+    for (int i=0;i<SIZE;i++){
+        showBrd>>names[i];
+        showBrd>>scores[i];
+    }
+    
+
+    showBrd.close(); 
+    //Sort and Display Leader Board
+    scorSrt(scores,names,SIZE);
+    for(int i=0;i<10;i++){
+    cout<<setw(35)<<names[i];
+    cout<<setw(25)<<scores[i]<<endl;
+    }
+    
+    
        
    //Exit stage right!
     return 0;
 } 
+
+//Sorting High scores
+void scorSrt(int a[],string b[],int n){
+    for(int i=0;i<n-1;i++){
+        for(int j=i+1;j<n;j++){
+            if(a[i]<a[j]){
+                int temp1=0;
+                string temp2="";
+                temp1=a[i];
+                a[i]=a[j];
+                a[j]=temp1;
+                temp2=b[i];
+                b[i]=b[j];
+                b[j]=temp2;
+                
+            }
+        }
+    }
+}
 //Scenarios:
 
 //Gambling Games
