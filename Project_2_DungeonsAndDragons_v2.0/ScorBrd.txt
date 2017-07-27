@@ -17,3 +17,6 @@
            NewCombat                 450
         PracticeTest                   0
           FinalScore                  50
+               kitty                  50
+                Test                 413
+                Test                 583

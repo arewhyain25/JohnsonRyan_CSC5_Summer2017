@@ -12,7 +12,7 @@
 #include <fstream>   //File I/O
 #include <iomanip>   //Format Library
 #include <cmath>     //Math Library
-#include <sstream>   //Stream Library
+#include <sstream>   //Stream Library    
 using namespace std; //Name-space under which system libraries exist
 
 //User Libraries
@@ -32,9 +32,9 @@ int dmg(int,int,int);//Roll + Ability Modifier + Bonus
 int rapier();
 int dagger();
 int fists();
-int combat(int&,int&,int,int&,int,int,int,int,int,int,bool&,bool&);
-int heroTrn(int&,int&,int,int&,int,int,int,int,int,int,bool&,bool&);
-int enmyTrn(int&,int&,int,int&,int,int,int,int,int,int,bool&,bool&);
+int combat(int&,int&,int,int&,int,int,int,int&,int,int,bool&,bool&);
+int heroTrn(int&,int&,int,int&,int,int,int,int&,int,int,bool&,bool&);
+int enmyTrn(int&,int&,int,int&,int,int,int,int&,int,int,bool&,bool&);
 int hlthpot(int&,int&,int&);
 bool guesNum(int&,float&,int,int,int&);//Guess the number
 void scorSrt(int[],string[],int);//Sorting High Scores
@@ -102,12 +102,17 @@ int main(int argc, char** argv) {
 
 
         //Character Features
-        int maxhlth=20;//Character's Health
+        const int maxhlth=20;//Character's Health
         int health=maxhlth;//Character's current health
         int gold=50;//Starting gold
         int armor=16;//Character's Armor Class
         string name;//Character's name
         string helper;//Name of contracted help
+        
+        //Enemy Features
+        int mobhlth=0;
+        int mobAC=0;
+        int cmbtmod=0;
 
         //Environmental Features
         bool helped=false;
@@ -167,12 +172,15 @@ int main(int argc, char** argv) {
                             "haven't you done"
                             " enough?"<<endl;
                }
-               guesNum(gold,table,chamod,decptn,wager);
-               if (gold<0){//You are fighting the gambler (Health=20,mod=1,AC=14)
-                   gold=abs(gold);//Return gold to positive if negative
-                   gold--;//resets gold to true value.
+                guesNum(gold,table,chamod,decptn,wager);
+                if (gold<0){//You are fighting the gambler (Health=20,mod=1,AC=14)
+                    gold=abs(gold);//Return gold to positive if negative
+                    gold--;//resets gold to true value.
+                    mobhlth=20;
+                    cmbtmod=1;
+                    mobAC=14;
                     combat(gold,health,maxhlth,potions,dexmod,armor,
-                            fweapon,20,1,14,victory,helped);
+                            fweapon,mobhlth,cmbtmod,mobAC,victory,helped);
                     //Player's Gold, Current Health, Max Health, # of Potions,
                     //Combat Modifier, and Armor Class;
                     //Mob's Health, Combat Modifier, and Armor Class;
@@ -219,6 +227,7 @@ int main(int argc, char** argv) {
     return 0;
 } 
 //End Display
+
 void end(int gold,string name){
     cout<<"You end the night with "<<gold<<" gold."<<endl;
     border();
@@ -376,12 +385,15 @@ void getRing(int &gold,int &health,int maxhlth,int armor,int fweapon,
     }
     if(check(20-beers*2,dexmod,sltohnd)==true){
           ring--;
-          int worth=(rand()%20+1)*5;
+          int worth=d20(1)*5;
           cout<<"The ring was worth "<<worth<<" gold."<<endl;
           gold+=worth;
     }else{//Combat!!!You're fighting Lover-Boy (health=14,mod=0,ac=12)
+        int mobhlth=14;
+        int cmbtmod=0;
+        int mobAC=12;
         combat(gold,health,maxhlth,potions,dexmod,
-                armor,fweapon,14,0,12,victory,helped);
+                armor,fweapon,mobhlth,cmbtmod,mobAC,victory,helped);
              //Player's Gold, Current Health, Max Health, # of Potions,
              //Combat Modifier, and Armor Class;
              //Mob's Health, Combat Modifier, and Armor Class;
@@ -404,7 +416,7 @@ void getRing(int &gold,int &health,int maxhlth,int armor,int fweapon,
             cout<<"You beat the kid up for catching you in the act "
                     "this is not what we would call a high moment for you."<<endl;;
             ring--;
-            int worth=(rand()%20+1)*5;
+            int worth=d20(1)*5;
             cout<<"The ring was worth "<<worth<<" gold."<<endl;
             gold+=worth;
             cout<<"What just occurred is not exactly a mystery to the patrons "
@@ -425,7 +437,7 @@ void wlkaway(int &gold,int beers, int &ring){
                 "yourself from the situation"<<endl;
         cout<<setw(100)<<"and avoid further notice."<<endl;
         ring--;
-        int worth=(rand()%20+1)*5;
+        int worth=d20(1)*5;
           cout<<"The ring was worth "<<worth<<" gold."<<endl;
           gold+=worth;
     }else{
@@ -612,7 +624,7 @@ void cmbtend(int &gold,int health,int wager,bool &victory,bool &helped,bool &fig
 }
 //If Combat is necessary    
 int combat(int& gold,int& health,int maxhlth,int& potions,int abltmod,int plyrAC,int weapon,
-        int mobhlth,int cbtmod,int mobAC,bool& victory,bool& helped){
+        int &mobhlth,int cbtmod,int mobAC,bool &victory,bool &helped){
     //roll initiative
     
     char move='0';
@@ -633,8 +645,8 @@ int combat(int& gold,int& health,int maxhlth,int& potions,int abltmod,int plyrAC
     abs(gold);
     return gold,health,potions,victory;
 }
-int heroTrn(int& gold,int& health,int maxhlth,int& potions,int abltmod,int plyrAC,int weapon,
-        int mobhlth,int cbtmod,int mobAC,bool& victory,bool& helped){
+int heroTrn(int &gold,int &health,int maxhlth,int& potions,int abltmod,int plyrAC,int weapon,
+        int &mobhlth,int cbtmod,int mobAC,bool &victory,bool &helped){
     char move='0';
     //Player Move
     if(health>0){
@@ -706,8 +718,8 @@ int heroTrn(int& gold,int& health,int maxhlth,int& potions,int abltmod,int plyrA
     }//End Player's move
     
 }
-int enmyTrn(int& gold,int& health,int maxhlth,int& potions,int abltmod,int plyrAC,int weapon,
-        int mobhlth,int cbtmod,int mobAC,bool& victory,bool& helped){
+int enmyTrn(int &gold,int &health,int maxhlth,int& potions,int abltmod,int plyrAC,int weapon,
+        int &mobhlth,int cbtmod,int mobAC,bool &victory,bool &helped){
     //Enemy's Move
     if(mobhlth>0){
         if(rand()%10==0){
@@ -734,7 +746,6 @@ int d4(int nDice){
     int total=0;
     for(int i=1;i<=nDice;i++){
         int die=rand()%4+1;//[1,4]
-        //cout<<die<<endl;
         total+=die;
     }
     return total;
@@ -743,7 +754,6 @@ int d6(int nDice){
     int total=0;
     for(int i=1;i<=nDice;i++){
         int die=rand()%6+1;//[1,6]
-        //cout<<die<<endl;
         total+=die;
     }
     return total;
@@ -752,7 +762,6 @@ int d8(int nDice){
     int total=0;
     for(int i=1;i<=nDice;i++){
         int die=rand()%8+1;//[1,8]
-        //cout<<die<<endl;
         total+=die;
     }
     return total;
@@ -761,7 +770,6 @@ int d10(int nDice){
     int total=0;
     for(int i=1;i<=nDice;i++){
         int die=rand()%10+1;//[1,10]
-        //cout<<die<<endl;
         total+=die;
     }
     return total;
@@ -770,7 +778,6 @@ int d12(int nDice){
     int total=0;
     for(int i=1;i<=nDice;i++){
         int die=rand()%12+1;//[1,12]
-        //cout<<die<<endl;
         total+=die;
     }
     return total;
@@ -781,18 +788,18 @@ int d20(int nDice){
         int die=rand()%20+1;//[1,20]
         if (die==20){cout<<"CRITICAL ROLL!"<<endl;}
         total+=die;
-        //cout<<total;
+        
     }
     return total;
 }
-bool check(int diff,int abltmod,int prof){
+bool check(int dfclty,int abltmod,int prof){
     bool check;
     int roll=0;
     roll=d20(1)+abltmod+prof;
     cout<<endl;
     if (roll==20){check=true;
     }
-    else {(roll>=diff)?check=true:check=false;}
+    else {(roll>=dfclty)?check=true:check=false;}
     return check;
 }
 int abltmod(int ablty){
