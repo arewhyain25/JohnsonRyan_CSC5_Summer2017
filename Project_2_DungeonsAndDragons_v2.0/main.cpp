@@ -26,6 +26,7 @@ int d8(int);//Roll 8-sided die x times
 int d10(int);//Roll 10-sided die x times
 int d12(int);//Roll 12-sided die x times
 int d20(int);//Roll 20-sided die x times
+int d20();//Roll a 20-sided die.
 bool check(int,int,int);//Set check difficulty,add bonuses, test for success
 int abltmod(int);//determine modifier from ability scores
 int dmg(int,int,int);//Roll + Ability Modifier + Bonus
@@ -37,7 +38,7 @@ int heroTrn(int&,int&,int,int&,int,int,int,int&,int,int,bool&,bool&);
 int enmyTrn(int&,int&,int,int&,int,int,int,int&,int,int,bool&,bool&);
 int hlthpot(int&,int&,int&);
 bool guesNum(int&,float&,int,int,int&);//Guess the number
-void scorSrt(int[],string[],int);//Sorting High Scores
+void scorSrt(int[],string[],int,string,int);//Sorting High Scores
 void play (int&,int&,int&,char&);//gold,health,potions,action
 void lvfool(int&,int&,int,int,int,int&,int,int,int&,int&,bool,bool&,string);
         //gold,health,max health,armor,finesse weapon,potions,dexterity mod,
@@ -52,6 +53,12 @@ void cmbtend(int&,int,int,bool&,bool&,bool&,string);
 void border();
 void end(int,string);
 
+//Function with Default argument
+//Determine player initiative in combat
+int intiatv(int roll,int abltmod=0){
+    roll+abltmod; 
+}
+
 //Execution begins here
 int main(int argc, char** argv) {
     //Setting the random number seed
@@ -59,75 +66,76 @@ int main(int argc, char** argv) {
     
     //Declare and Initialize variables
     char action=0;
-        //Character Ability Scores
-        const int str=10,//Strength
-                  dex=16,//Dexterity
-                  con=10,//Constitution
-                  intl=14,//Intellect
-                  wis=13,//Wisdom
-                  cha=14;//Charisma
+    //Character Ability Scores
+    const int str=10,//Strength
+              dex=16,//Dexterity
+              con=10,//Constitution
+              intl=14,//Intellect
+              wis=13,//Wisdom
+              cha=14;//Charisma
 
-        //Ability Modifiers
-        int strmod=abltmod(str);
-        int dexmod=abltmod(dex);
-        int conmod=abltmod(con);
-        int intmod=abltmod(intl);
-        int wismod=abltmod(wis);
-        int chamod=abltmod(cha);
+    //Ability Modifiers
+    int strmod=abltmod(str);
+    int dexmod=abltmod(dex);
+    int conmod=abltmod(con);
+    int intmod=abltmod(intl);
+    int wismod=abltmod(wis);
+    int chamod=abltmod(cha);
 
-        //Character Proficiencies
-        int profbns=3;//Proficiency Bonus
-        int     athltcs=profbns*1,  //Athletics
-                acrbtcs=profbns*1,  //Acrobatics
-                sltohnd=profbns*2, //Sleight of Hand (double proficiency)
-                stlth=profbns*1,    //Stealth
-                arcana=profbns*0,   //Arcana
-                history=profbns*0,  //History
-                invstgt=profbns*0,  //Investigate
-                nature=profbns*0,   //Nature
-                relgion=profbns*0,  //Religion
-                anmlhnd=profbns*0,  //Animal Handling
-                insight=profbns*0,  //Insight
-                medicn=profbns*0,   //Medicine
-                prcptn=profbns*1,   //Perception
-                survl=profbns*0,    //Survival
-                decptn=profbns*2,   //Deception (double proficiency)
-                intmdtn=profbns*0,  //Intimidation
-                prfmnc=profbns*0,   //Performance
-                persn=profbns*2,    //Persuasion (double proficiency)
-                fweapon=profbns*1,   //Finesse Weapon
-                rweapon=profbns*1,   //Ranged Weapon
-                mweapon=profbns*1,   //Marshal Weapon
-                gweapon=profbns*0;   //Great/2-hand Weapon
+    //Character Proficiencies
+    int profbns=3;//Proficiency Bonus
+    int     athltcs=profbns*1,  //Athletics
+            acrbtcs=profbns*1,  //Acrobatics
+            sltohnd=profbns*2, //Sleight of Hand (double proficiency)
+            stlth=profbns*1,    //Stealth
+            arcana=profbns*0,   //Arcana
+            history=profbns*0,  //History
+            invstgt=profbns*0,  //Investigate
+            nature=profbns*0,   //Nature
+            relgion=profbns*0,  //Religion
+            anmlhnd=profbns*0,  //Animal Handling
+            insight=profbns*0,  //Insight
+            medicn=profbns*0,   //Medicine
+            prcptn=profbns*1,   //Perception
+            survl=profbns*0,    //Survival
+            decptn=profbns*2,   //Deception (double proficiency)
+            intmdtn=profbns*0,  //Intimidation
+            prfmnc=profbns*0,   //Performance
+            persn=profbns*2,    //Persuasion (double proficiency)
+            fweapon=profbns*1,   //Finesse Weapon
+            rweapon=profbns*1,   //Ranged Weapon
+            mweapon=profbns*1,   //Marshal Weapon
+            gweapon=profbns*0;   //Great/2-hand Weapon
 
 
-        //Character Features
-        const int maxhlth=20;//Character's Health
-        int health=maxhlth;//Character's current health
-        int gold=50;//Starting gold
-        int armor=16;//Character's Armor Class
-        string name;//Character's name
-        string helper;//Name of contracted help
+    //Character Features
+    const int maxhlth=20;//Character's Health
+    int health=maxhlth;//Character's current health
+    int gold=50;//Starting gold
+    int armor=16;//Character's Armor Class
+    string name;//Character's name
+    string helper;//Name of contracted help
         
-        //Enemy Features
-        int mobhlth=0;
-        int mobAC=0;
-        int cmbtmod=0;
+    //Enemy Features
+    int mobhlth=0;
+    int mobAC=0;
+    int cmbtmod=0;
 
-        //Environmental Features
-        bool helped=false;
-        int beers=0;//Beers drank
-        int potions=3;//Health potions in inventory
-        float table=500;//Available gold in the Inn
-        int ring=1;//Limits the occurrence of the ring theft
-        bool victory=true;//Condition set by combat resolution
-        int wager=0;
-        bool fight=false;//Prevents player from returning to the gambling table 
-                         //After fighting.
-        //I/O Files
-        string instrng="";
-    border();    
-    //Intro
+    //Environmental Features
+    bool helped=false;
+    int beers=0;//Beers drank
+    int potions=3;//Health potions in inventory
+    float table=500;//Available gold in the Inn
+    int ring=1;//Limits the occurrence of the ring theft
+    bool victory=true;//Condition set by combat resolution
+    int wager=0;
+    bool fight=false;//Prevents player from returning to the gambling table 
+                     //After fighting.
+    //I/O Files
+    string instrng="";      
+        
+    //Introduction
+    border(); 
     ifstream intro;  
     intro.open("intro.txt");    
     while(!intro.eof()){
@@ -146,7 +154,7 @@ int main(int argc, char** argv) {
     border();
     //Begin Play
     ifstream cmnroom;  
-    cmnroom.open("cmnroom.txt");
+    cmnroom.open("cmnroom.txt");//Description of common room
     while(!cmnroom.eof())
         {
         getline(cmnroom,instrng);
@@ -157,7 +165,7 @@ int main(int argc, char** argv) {
     cout<<endl;
     
     do{
-        play (gold,health,potions,action);              
+        play (gold,health,potions,action);//The main decision to get to each branch             
 
        switch(action){
            case '1':{//Gambling                         
@@ -187,7 +195,7 @@ int main(int argc, char** argv) {
                     cmbtend(gold,health,wager,victory,helped,fight,helper);    
                }break;
            }
-           case '2':{//Buy a drink                       
+           case '2':{//Step up to the bar                     
                beers=0;
 
                    if (ring<1){
@@ -246,6 +254,7 @@ void end(int gold,string name){
     int SIZE=100;
     string names[SIZE]={};
     int scores[SIZE]={};
+    int scrCnt[SIZE]={};
     showBrd.open("ScorBrd.txt");
 
         //Fill Array from file
@@ -255,15 +264,21 @@ void end(int gold,string name){
         } 
         showBrd.close(); 
         //Sort and Display Leader Board
-        scorSrt(scores,names,SIZE);
+        scorSrt(scores,names,SIZE,name,gold);
         for(int i=0;i<10;i++){
-        cout<<setw(35)<<names[i];
-        cout<<setw(25)<<scores[i]<<endl;
+            scrCnt[i]=i+1; 
+            cout<<setw(2)<<scrCnt[i];
+            cout<<setw(35)<<names[i];
+            cout<<setw(25)<<scores[i];
+            if (names[i]==name&&scores[i]==gold){
+                cout<<" *****NEW HIGH SCORE*****";                
+            }
+            cout<<endl;
         }
         border();
 }
 //Sorting High scores
-void scorSrt(int a[],string b[],int n){
+void scorSrt(int a[],string b[],int n,string,int){
     for(int i=0;i<n-1;i++){
         for(int j=i+1;j<n;j++){
             if(a[i]<a[j]){
@@ -325,7 +340,7 @@ void lvfool(int &gold,int &health,int maxhlth,int armor,int fweapon,
             getRing(gold,health,maxhlth,armor,fweapon,potions,
                     dexmod,sltohnd,beers,ring,helped,victory,helper);                                        
        }break;
-       case '3':{
+       default:{
            wlkaway(gold,beers,ring);                                      
        }break;
    }    
@@ -385,7 +400,7 @@ void getRing(int &gold,int &health,int maxhlth,int armor,int fweapon,
     }
     if(check(20-beers*2,dexmod,sltohnd)==true){
           ring--;
-          int worth=d20(1)*5;
+          int worth=d20()*5;
           cout<<"The ring was worth "<<worth<<" gold."<<endl;
           gold+=worth;
     }else{//Combat!!!You're fighting Lover-Boy (health=14,mod=0,ac=12)
@@ -416,7 +431,7 @@ void getRing(int &gold,int &health,int maxhlth,int armor,int fweapon,
             cout<<"You beat the kid up for catching you in the act "
                     "this is not what we would call a high moment for you."<<endl;;
             ring--;
-            int worth=d20(1)*5;
+            int worth=d20()*5;
             cout<<"The ring was worth "<<worth<<" gold."<<endl;
             gold+=worth;
             cout<<"What just occurred is not exactly a mystery to the patrons "
@@ -437,7 +452,7 @@ void wlkaway(int &gold,int beers, int &ring){
                 "yourself from the situation"<<endl;
         cout<<setw(100)<<"and avoid further notice."<<endl;
         ring--;
-        int worth=d20(1)*5;
+        int worth=d20()*5;
           cout<<"The ring was worth "<<worth<<" gold."<<endl;
           gold+=worth;
     }else{
@@ -610,7 +625,7 @@ void cmbtend(int &gold,int health,int wager,bool &victory,bool &helped,bool &fig
         cout<<"Fights over gambling are common and "
                 "while everyone is a bit wary of you,"
                 " no one is giving you trouble."<<endl;
-        int find=(wager*2-wager/d20(1));//Randomize gold recovered just the a DM would
+        int find=(wager*2-wager/d20());//Randomize gold recovered just the a DM would
         gold+=find;
         cout<<"You find "<<find<<" gold and now have "
                 <<gold<<" total."<<endl;
@@ -628,8 +643,8 @@ int combat(int& gold,int& health,int maxhlth,int& potions,int abltmod,int plyrAC
     //roll initiative
     
     char move='0';
-    int pInitv=d20(1)+abltmod;//player initiative plus dexterity
-    int mInitv=d20(1);//mob initiative (no dex bonus because inn mobs are not special
+    int pInitv=intiatv(d20(),abltmod);//player initiative plus dexterity
+    int mInitv=intiatv(d20());//mob initiative (no dex bonus because inn mobs are not special
     if (pInitv>mInitv){//Player goes first
         do{
             heroTrn(gold,health,maxhlth,potions,abltmod,plyrAC,weapon,mobhlth,cbtmod,mobAC,victory,helped);
@@ -787,15 +802,17 @@ int d20(int nDice){
     for(int i=1;i<=nDice;i++){
         int die=rand()%20+1;//[1,20]
         if (die==20){cout<<"CRITICAL ROLL!"<<endl;}
-        total+=die;
-        
+        total+=die;        
     }
     return total;
+}
+int d20(){     
+    return rand()%20+1;//[1,20]
 }
 bool check(int dfclty,int abltmod,int prof){
     bool check;
     int roll=0;
-    roll=d20(1)+abltmod+prof;
+    roll=d20()+abltmod+prof;
     cout<<endl;
     if (roll==20){check=true;
     }
@@ -806,7 +823,7 @@ int abltmod(int ablty){
     int mod=(ablty-10)/2;
     return mod;
 }
-int dmg(int roll,int mod,int bonus){
+int dmg(int roll,int mod,int bonus=0){
     int dmg=roll+mod+bonus;    
     return dmg;
 }
