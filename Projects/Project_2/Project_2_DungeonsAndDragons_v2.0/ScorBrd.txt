@@ -3,3 +3,5 @@
 			
              PLAYER1                  50
                 Ryan                 570
+                Ryan                 180        
+             
